@@ -354,6 +354,21 @@ footer{
     already in it.</p>
   </div>
   <div class="note">
+    <h3>Why the route dips through doubt</h3>
+    <p>Take <em>An outside applicant</em>: the framework has exactly three coherent positions,
+    Ada's, Ben's, and the one where everything is undecided. There is nowhere else to stand.
+    Ada's and Ben's positions each commit to something the other denies, and a move in this
+    model only ever <em>suspends</em> commitments or <em>makes</em> them; reversing a judgment
+    ("a is in" to "a is out") is not a move one can ask of anyone. Reversal has to be realized
+    as suspend, then re-commit, and the only position below both is total suspension. Once
+    there, completeness drags c along: c stays out only while some attacker of it stands, and
+    at the bottom neither a nor b does.</p>
+    <p>The dashed arc is the <em>direct demand</em>: "adopt my position, now." Here it is
+    even cheaper by count (it changes two labels; the gentlest route must move three at once),
+    but it is not a persuasion move. It asks Ada to flip from believing a to believing b
+    without ever passing through doubt, and no coherent position realizes that state.</p>
+  </div>
+  <div class="note">
     <h3>Ballast and ridges</h3>
     <p>Agreed claims that hang on the contested one are <em>ballast</em>. Raise the slider and
     the incline rises with it without bound, though the parties still disagree about exactly
@@ -484,7 +499,7 @@ const FRAMEWORKS = [
     id:"outsider", tag:"F₃", name:"An outside applicant",
     sub:"Both reject c, for different reasons.",
     build:()=>ballastAF(1),
-    story:"They agree c is out. She rejects c because a is better; he rejects c because b is. The agreement is not in dispute, and it still costs."
+    story:"They agree c is out. She rejects c because a is better; he rejects c because b is. The reason is exactly what is being renegotiated: while the slot is suspended, nothing blocks c, so the agreed rejection comes loose too. The agreement is not in dispute, and it still costs."
   },
   {
     id:"ballast", tag:"F_B", name:"Ballast",
