@@ -490,7 +490,12 @@ function route(n,labs,E,s,t){
         while(c!==null&&c!==undefined){path.unshift(c); c=prev.get(c);}
         return {tau, path};
       }
-      for(const v of (adj.get(u)||[])) if(!prev.has(v)){prev.set(v,u); q.push(v);}
+      // tie-break among equally gentle steps: prefer the neighbor that keeps
+      // the most committed ("hold as little open as possible"), so e.g. the
+      // independent-slots demo draws the serialized route, not the one that
+      // dips through the fully undecided center. Same incline either way.
+      const nbrs=[...(adj.get(u)||[])].sort((a,b)=>commitCount(n,labs[b])-commitCount(n,labs[a]));
+      for(const v of nbrs) if(!prev.has(v)){prev.set(v,u); q.push(v);}
     }
   }
   return {tau:Infinity, path:[]};
@@ -525,7 +530,7 @@ const FRAMEWORKS = [
     sub:"Distance 4, and it still only costs 2.",
     build:()=>({n:4, edges:[[0,1],[1,0],[2,3],[3,2]], names:["a₁","b₁","a₂","b₂"],
       P0:["in","out","in","out"], Pn:["out","in","out","in"]}),
-    story:"Now Ada and Ben disagree about two unrelated jobs at once: a₁ against b₁ for the first, a₂ against b₂ for the second. Because the jobs share nothing, they can be renegotiated one at a time: reopen job one, settle it Ben's way, then do the same for job two. The endpoints differ on four labels, yet no single step ever moves more than two. Inching works, and the gap grows without bound as slots are added. The drawn route is one of <b>twelve gentle routes</b> between the two positions: every edge here moves exactly two labels, so every simple route is gentle. Six take the minimal four steps; four of those pass through the fully undecided center, which asks Ada to hold both jobs open at once, and two keep at most one job open at any moment. The remaining six are gentle detours of six or eight steps: same incline, more meetings. The incline says which routes are gentle, not which gentle route to take; length and how much must be held open at once still distinguish them. So far, persuasion looks easy."
+    story:"Now Ada and Ben disagree about two unrelated jobs at once: a₁ against b₁ for the first, a₂ against b₂ for the second. Because the jobs share nothing, they can be renegotiated one at a time: reopen job one, settle it Ben's way, then do the same for job two. The endpoints differ on four labels, yet no single step ever moves more than two. Inching works, and the gap grows without bound as slots are added. The drawn route is one of <b>twelve gentle routes</b> between the two positions: every edge here moves exactly two labels, so every simple route is gentle. The demo draws the serialized one, which keeps as much settled as possible at every moment; the model itself is indifferent. Six take the minimal four steps; four of those pass through the fully undecided center, which asks Ada to hold both jobs open at once, and two keep at most one job open at any moment. The remaining six are gentle detours of six or eight steps: same incline, more meetings. The incline says which routes are gentle, not which gentle route to take; length and how much must be held open at once still distinguish them. So far, persuasion looks easy."
   },
   {
     id:"outsider", tag:"3", name:"An outside applicant",
