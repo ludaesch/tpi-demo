@@ -1,0 +1,488 @@
+<title>Incline Pocket</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&display=swap">
+
+<style>
+:root{
+  --ground:#f5f7f9; --surface:#ffffff; --surface-2:#eaeef3;
+  --ink:#141b23; --ink-2:#4c5a68; --ink-3:#7d8b99;
+  --rule:#d8e0e8; --rule-2:#e6ecf2;
+  /* same paper palette as the desktop explorer */
+  --in:#006ad1;    --in-fill:#40cfff;
+  --out:#cd8400;   --out-fill:#ffb763;
+  --undec:#8f8f00; --undec-fill:#FFFFAA;
+  --glyph:#141b23;
+  --gentle:#127a4b; --gentle-soft:#dcefe5;
+  --steep:#8a2f4a;  --steep-soft:#f4dfe5;
+  --ripple:#AAAA00;
+  --on-gentle:#ffffff;
+  --bar:rgba(255,255,255,.92);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#10161d; --surface:#171f28; --surface-2:#1e2833;
+    --ink:#dfe7ef; --ink-2:#a6b4c3; --ink-3:#78889a;
+    --rule:#293544; --rule-2:#222c39;
+    --in:#4da3ff; --out:#e0a13a; --undec:#cfcf4a;
+    --gentle:#5fbf8f; --gentle-soft:#153428;
+    --steep:#e08098; --steep-soft:#3a1c25;
+    --ripple:#cfcf4a; --on-gentle:#08211c;
+    --bar:rgba(23,31,40,.92);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#10161d; --surface:#171f28; --surface-2:#1e2833;
+  --ink:#dfe7ef; --ink-2:#a6b4c3; --ink-3:#78889a;
+  --rule:#293544; --rule-2:#222c39;
+  --in:#4da3ff; --out:#e0a13a; --undec:#cfcf4a;
+  --gentle:#5fbf8f; --gentle-soft:#153428;
+  --steep:#e08098; --steep-soft:#3a1c25;
+  --ripple:#cfcf4a; --on-gentle:#08211c;
+  --bar:rgba(23,31,40,.92);
+}
+
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%;
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+}
+.wrap{max-width:560px;margin:0 auto;padding:18px 14px 8px}
+
+h1{
+  font-family:"IBM Plex Serif",Georgia,serif;font-weight:600;
+  font-size:25px;line-height:1.15;margin:0 0 6px;letter-spacing:-.01em;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px;
+}
+.sub{font-size:14px;color:var(--ink-2);margin:0 0 16px}
+
+/* framework picker: horizontal snap rail, thumb friendly */
+.rail{
+  display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:2px 14px 12px;margin:0 -14px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.rail::-webkit-scrollbar{display:none}
+.pick{
+  scroll-snap-align:start;flex:0 0 auto;max-width:78vw;
+  font:inherit;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--rule);border-radius:12px;
+  padding:10px 13px;color:var(--ink);min-height:52px;
+}
+.pick[aria-pressed="true"]{border-color:var(--gentle);background:var(--gentle-soft)}
+.pick b{display:block;font-weight:600;font-size:14px;line-height:1.25}
+.pick i{display:block;font-style:normal;font-size:12px;color:var(--ink-3);margin-top:1px}
+
+/* the two numbers */
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.num{
+  background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:11px 13px;
+}
+.num .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3)}
+.num .v{font-family:"IBM Plex Serif",Georgia,serif;font-size:30px;font-weight:600;
+  line-height:1.1;font-variant-numeric:tabular-nums}
+.num.d .v{color:var(--steep)} .num.i .v{color:var(--gentle)}
+.num .c{font-size:11.5px;color:var(--ink-3);line-height:1.35;margin-top:1px}
+
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;margin-bottom:14px}
+.card h2{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500;
+  margin:0;padding:12px 14px 8px;
+}
+.card .bd{padding:0 14px 14px}
+
+svg.af{display:block;width:100%;height:auto}
+
+/* the route as a vertical ladder */
+.ladder{list-style:none;margin:0;padding:0}
+.rung{display:grid;grid-template-columns:34px 1fr;gap:11px;align-items:start}
+.gutter{position:relative;display:flex;flex-direction:column;align-items:center;min-height:100%}
+.dot{width:13px;height:13px;border-radius:50%;background:var(--rule);border:2px solid var(--surface);
+  box-shadow:0 0 0 1.5px var(--rule);margin-top:5px;flex:none}
+.rung.done .dot{background:var(--gentle);box-shadow:0 0 0 1.5px var(--gentle)}
+.rung.now .dot{background:var(--gentle);box-shadow:0 0 0 4px var(--gentle-soft),0 0 0 5.5px var(--gentle)}
+.stem{width:2px;flex:1;background:var(--rule);margin:3px 0}
+.rung.done .stem{background:var(--gentle)}
+.wt{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+  color:var(--ink-3);background:var(--surface-2);border-radius:6px;padding:1px 5px;margin:2px 0;
+}
+.rung.done .wt{color:var(--gentle);background:var(--gentle-soft)}
+.body{padding-bottom:14px;min-width:0}
+.who{font-weight:600;font-size:14px}
+.rung.upcoming .body{opacity:.42}
+.say{font-size:13.5px;color:var(--ink-2);margin:3px 0 0;line-height:1.45}
+.say .rip{color:var(--ripple);font-weight:600}
+
+/* label chips */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.chip{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+  border-radius:7px;padding:3px 7px;border:1px solid transparent;
+  color:var(--glyph);white-space:nowrap;
+}
+.chip.in{background:var(--in-fill);border-color:var(--in)}
+.chip.out{background:var(--out-fill);border-color:var(--out)}
+.chip.undec{background:var(--undec-fill);border-color:var(--undec)}
+.chip.moved{box-shadow:0 0 0 2px var(--ripple)}
+.chip .st{opacity:.62;font-size:10px;margin-left:3px}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-2);padding:0 14px 12px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{width:10px;height:10px;border-radius:3px;flex:none;border:1.5px solid}
+
+/* fixed bottom transport */
+.bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:9;
+  background:var(--bar);backdrop-filter:saturate(150%) blur(10px);
+  border-top:1px solid var(--rule);
+  padding:9px 12px calc(9px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:1fr 1fr 1.5fr 1fr;gap:8px;
+  max-width:560px;margin:0 auto;
+}
+.bar button{
+  font:inherit;font-size:14px;font-weight:600;min-height:46px;
+  border-radius:11px;border:1px solid var(--rule);
+  background:var(--surface);color:var(--ink);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.bar button.go{background:var(--gentle);border-color:var(--gentle);color:var(--on-gentle)}
+.bar button:disabled{opacity:.38}
+.bar button:active{transform:scale(.97)}
+.hint{
+  text-align:center;font-size:11.5px;color:var(--ink-3);
+  padding:2px 14px 16px;
+}
+.note{font-size:13px;color:var(--ink-2);padding:0 2px 20px;line-height:1.55}
+.note b{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Trial balloon · phone build</div>
+  <h1>Why concessions are not local</h1>
+  <p class="sub">Persuasion costs what its hardest single step costs. Pick a disagreement and walk it.</p>
+</div>
+
+<div class="rail" id="rail"></div>
+
+<div class="wrap" style="padding-top:0">
+  <div class="nums">
+    <div class="num d"><div class="k">Distance</div><div class="v" id="vD">–</div>
+      <div class="c">labels apart</div></div>
+    <div class="num i"><div class="k">Incline</div><div class="v" id="vI">–</div>
+      <div class="c">worst single step</div></div>
+  </div>
+
+  <div class="card">
+    <h2>The framework <span id="afcap"></span></h2>
+    <div class="bd" style="padding-bottom:6px">
+      <svg class="af" id="af" viewBox="0 0 360 220" role="img"
+        aria-label="the argumentation framework, colored by the current position"></svg>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--in-fill);border-color:var(--in)"></i>in</span>
+      <span><i class="sw" style="background:var(--out-fill);border-color:var(--out)"></i>out</span>
+      <span><i class="sw" style="background:var(--undec-fill);border-color:var(--undec)"></i>undecided</span>
+      <span><i class="sw" style="background:transparent;border-style:dashed;border-color:var(--ink-3)"></i>both agree</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>The route <span id="rcap"></span></h2>
+    <div class="bd"><ol class="ladder" id="ladder"></ol></div>
+  </div>
+
+  <p class="note" id="closing"></p>
+</div>
+
+<div class="bar">
+  <button id="bStart" title="start">⏮</button>
+  <button id="bEnd" title="end">⏭</button>
+  <button id="bFwd" class="go">Forward ▶</button>
+  <button id="bBack">◀</button>
+</div>
+<p class="hint">swipe left or right anywhere to step</p>
+
+<script>
+"use strict";
+/* ---------- machinery (same as the desktop explorer) ---------- */
+function mkAtt(n,edges){const a=new Array(n).fill(0);for(const[x,y]of edges)a[y]|=(1<<x);return a;}
+function completeLabelings(n,att){
+  const out=[];
+  for(let inM=0;inM<(1<<n);inM++){
+    let outM=0;
+    for(let a=0;a<n;a++) if(att[a]&inM) outM|=(1<<a);
+    if(inM&outM) continue;
+    let ok=true;
+    for(let a=0;a<n;a++){
+      const allOut=(att[a]&~outM&((1<<n)-1))===0;
+      const isIn=((inM>>a)&1)===1;
+      if(isIn!==allOut){ok=false;break;}
+    }
+    if(ok) out.push([inM,outM]);
+  }
+  return out;
+}
+const labVec=(n,L)=>{const v=[];for(let a=0;a<n;a++)v.push((L[0]>>a&1)?"in":(L[1]>>a&1)?"out":"undec");return v;};
+const weight=(n,A,B)=>{const x=labVec(n,A),y=labVec(n,B);let w=0;for(let a=0;a<n;a++)if(x[a]!==y[a])w++;return w;};
+const changed=(n,A,B)=>{const x=labVec(n,A),y=labVec(n,B),s=[];for(let a=0;a<n;a++)if(x[a]!==y[a])s.push(a);return s;};
+const leq=(A,B)=>((A[0]&~B[0])===0)&&((A[1]&~B[1])===0);
+const strictly=(A,B)=>leq(A,B)&&!(A[0]===B[0]&&A[1]===B[1]);
+function coveringEdges(n,labs){
+  const E=[];
+  for(let i=0;i<labs.length;i++)for(let j=0;j<labs.length;j++){
+    if(i===j||!strictly(labs[i],labs[j]))continue;
+    let cov=true;
+    for(let k=0;k<labs.length;k++){
+      if(k===i||k===j)continue;
+      if(strictly(labs[i],labs[k])&&strictly(labs[k],labs[j])){cov=false;break;}
+    }
+    if(cov)E.push({a:i,b:j,w:weight(n,labs[i],labs[j])});
+  }
+  return E;
+}
+function route(n,labs,E,s,t){
+  for(const tau of [...new Set(E.map(e=>e.w))].sort((x,y)=>x-y)){
+    const adj=new Map();
+    for(const e of E) if(e.w<=tau){
+      if(!adj.has(e.a))adj.set(e.a,[]); if(!adj.has(e.b))adj.set(e.b,[]);
+      adj.get(e.a).push(e.b); adj.get(e.b).push(e.a);
+    }
+    const prev=new Map([[s,null]]),q=[s];
+    while(q.length){
+      const u=q.shift();
+      if(u===t){const p=[];let c=t;while(c!==null&&c!==undefined){p.unshift(c);c=prev.get(c);}return{tau,path:p};}
+      for(const v of (adj.get(u)||[])) if(!prev.has(v)){prev.set(v,u);q.push(v);}
+    }
+  }
+  return {tau:Infinity,path:[]};
+}
+
+/* ---------- frameworks ---------- */
+const MENU=[[0,1],[1,0],[0,2],[2,0],[1,2],[2,1],[3,4],[4,3],[1,3],[2,3]];
+const MENUN=["fish","meat","pasta","white","red"];
+function ballast(B){
+  const e=[[0,1],[1,0]]; const nm=["a","b"];
+  for(let i=0;i<B;i++){e.push([0,2+i]);e.push([1,2+i]);nm.push("c"+(B>1?(i+1):""));}
+  return {n:2+B,edges:e,names:nm,
+    P0:["in","out",...Array(B).fill("out")],
+    Pn:["out","in",...Array(B).fill("out")]};
+}
+const FW=[
+ {id:"menu-ripple",name:"Dinner: the ripple",sub:"agree on wine, differ on the main",
+  who:["Cleo","Dana"],
+  build:()=>({n:5,edges:MENU,names:MENUN,P0:["out","in","out","out","in"],Pn:["out","out","in","out","in"]}),
+  closing:"They differ about two labels and no step can move fewer than three. Reopening the meat reopens the whole main course, and the fish comes back with it though both had ruled it out. Meanwhile the red never budges, which is the only reason the white stays out. This is Example 1 of Alfano, Greco, Parisi and Trubitsyna (KR 2024), unchanged."},
+ {id:"menu-staging",name:"Dinner: staging pays",sub:"two menus with nothing in common",
+  who:["Cleo","Dana"],
+  build:()=>({n:5,edges:MENU,names:MENUN,P0:["in","out","out","in","out"],Pn:["out","in","out","out","in"]}),
+  closing:"Four labels apart, and it can be done without ever asking for more than three at once. Read the route as advice: settle the wine first while the main still stands, then change the main under a wine that is now settled."},
+ {id:"outsider",name:"The outside applicant",sub:"both reject c, for different reasons",
+  who:["Ada","Ben"], build:()=>ballast(1),
+  closing:"Ada rules c out because a is stronger; Ben because b is. The reason is exactly what is being renegotiated, so c comes loose in the middle even though nobody disputes it."},
+ {id:"ballast3",name:"Ballast",sub:"three agreed claims hang on the contested one",
+  who:["Ada","Ben"], build:()=>ballast(3),
+  closing:"Every one of the three rests on the contested appointment. The single unavoidable crossing has to carry all of them at once, so the incline is 5 while the disagreement is still just two arguments."},
+ {id:"slots",name:"Two independent slots",sub:"distance grows, incline does not",
+  who:["Ada","Ben"],
+  build:()=>({n:4,edges:[[0,1],[1,0],[2,3],[3,2]],names:["a₁","b₁","a₂","b₂"],
+    P0:["in","out","in","out"],Pn:["out","in","out","in"]}),
+  closing:"Nothing links the slots, so they are renegotiated one at a time. Add more slots and the distance keeps growing while the incline stays at 2."},
+ {id:"ridge",name:"The ridge",sub:"the gentlest route avoids the middle",
+  who:["Ada","Ben"],
+  build:()=>({n:5,edges:[[0,3],[3,0],[1,2],[2,1],[0,4],[1,4]],names:["0","1","2","3","4"],
+    P0:["in","out","in","out","out"],Pn:["out","in","out","in","out"]}),
+  closing:"Claim 4 is blocked by 0 and by 1 and nothing else. Meeting in the middle releases both blockers at once, so the route goes over a ridge: a third position neither party holds, which keeps one blocker standing the whole way."}
+];
+
+let cur=FW[0],model=null,step=0;
+
+function build(){
+  const spec=cur.build();
+  const att=mkAtt(spec.n,spec.edges);
+  const labs=completeLabelings(spec.n,att);
+  const E=coveringEdges(spec.n,labs);
+  const find=v=>labs.findIndex(L=>labVec(spec.n,L).every((x,k)=>x===v[k]));
+  const s=find(spec.P0),t=find(spec.Pn);
+  const r=route(spec.n,labs,E,s,t);
+  const va=labVec(spec.n,labs[s]),vb=labVec(spec.n,labs[t]);
+  const zone=new Set(); for(let a=0;a<spec.n;a++) if(va[a]!==vb[a]) zone.add(a);
+  model={...spec,who:cur.who,labs,E,s,t,path:r.path,inc:r.tau,
+         dist:weight(spec.n,labs[s],labs[t]),zone};
+  step=0; render();
+}
+
+/* ---------- AF drawing, fitted to the viewBox ---------- */
+const NS="http://www.w3.org/2000/svg";
+const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+function rawPos(id,n){
+  const P=[];
+  if(id.startsWith("menu")){P[0]={x:0,y:0};P[1]={x:1,y:0};P[2]={x:2,y:0};P[3]={x:.5,y:1};P[4]={x:1.5,y:1};}
+  else if(id==="outsider"||id==="ballast3"){
+    P[0]={x:0,y:0};P[1]={x:1,y:0};
+    const B=n-2;
+    for(let i=0;i<B;i++)P[2+i]={x:B===1?.5:(i/(B-1)),y:1};
+  }
+  else if(id==="slots"){P[0]={x:0,y:0};P[1]={x:1,y:0};P[2]={x:0,y:1};P[3]={x:1,y:1};}
+  else if(id==="ridge"){P[3]={x:0,y:0};P[0]={x:1,y:0};P[1]={x:2,y:0};P[2]={x:3,y:0};P[4]={x:1.5,y:1};}
+  for(let a=0;a<n;a++) if(!P[a]) P[a]={x:a,y:0};
+  return P;
+}
+function renderAF(){
+  const {n,names,edges,labs,path,zone}=model;
+  const svg=document.getElementById("af");
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const W=360,H=220,PAD=30;
+  const raw=rawPos(cur.id,n);
+  const xs=raw.map(p=>p.x),ys=raw.map(p=>p.y);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const cols=(x1-x0)||1;
+  const R=Math.max(13,Math.min(22,(W-2*PAD)/(cols+1)/2.35));
+  const sx=v=>PAD+R+((v-x0)/(x1-x0||1))*(W-2*(PAD+R));
+  const sy=v=>(y1===y0)?H/2:PAD+R+((v-y0)/(y1-y0))*(H-2*(PAD+R));
+  const P=raw.map(p=>({x:sx(p.x),y:sy(p.y)}));
+
+  const defs=el("defs",{});
+  const m=el("marker",{id:"ah2",viewBox:"0 0 10 10",refX:"9.5",refY:"5",
+    markerWidth:"6",markerHeight:"6",orient:"auto-start-reverse"});
+  m.appendChild(el("path",{d:"M 0 1 L 10 5 L 0 9 z",fill:"var(--ink-3)"}));
+  defs.appendChild(m); svg.appendChild(defs);
+
+  const cIdx=path.length?path[Math.min(step,path.length-1)]:model.s;
+  const v=labVec(n,labs[cIdx]);
+  const just=(step>0&&path.length>step)?new Set(changed(n,labs[path[step-1]],labs[path[step]])):new Set();
+  const has=(x,y)=>edges.some(e=>e[0]===x&&e[1]===y);
+
+  for(const [x,y] of edges){
+    const p=P[x],q=P[y]; if(!p||!q)continue;
+    const dx=q.x-p.x,dy=q.y-p.y,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
+    const sxx=p.x+ux*R,syy=p.y+uy*R,tx=q.x-ux*(R+2.5),ty=q.y-uy*(R+2.5);
+    if(has(y,x)){
+      const b=13,mx=(sxx+tx)/2-uy*b,my=(syy+ty)/2+ux*b;
+      svg.appendChild(el("path",{d:`M ${sxx} ${syy} Q ${mx} ${my} ${tx} ${ty}`,fill:"none",
+        stroke:"var(--ink-3)","stroke-width":1.3,"marker-end":"url(#ah2)",opacity:.85}));
+    } else {
+      svg.appendChild(el("line",{x1:sxx,y1:syy,x2:tx,y2:ty,stroke:"var(--ink-3)",
+        "stroke-width":1.3,"marker-end":"url(#ah2)",opacity:.85}));
+    }
+  }
+  for(let a=0;a<n;a++){
+    const p=P[a],lab=v[a],agreed=!zone.has(a);
+    if(just.has(a)&&agreed)
+      svg.appendChild(el("circle",{cx:p.x,cy:p.y,r:R+5,fill:"none",stroke:"var(--ripple)","stroke-width":2,opacity:.6}));
+    svg.appendChild(el("circle",{cx:p.x,cy:p.y,r:R,
+      fill:lab==="in"?"var(--in-fill)":lab==="undec"?"var(--undec-fill)":"var(--out-fill)",
+      stroke:"var(--glyph)","stroke-width":1.2,
+      "stroke-dasharray":agreed&&lab!=="undec"?"3 3":"none"}));
+    const t=el("text",{x:p.x,y:p.y+4,"text-anchor":"middle","font-family":"IBM Plex Mono, monospace",
+      "font-size":Math.min(12.5,Math.max(8.5,R*0.72)),"font-weight":600,fill:"var(--glyph)"});
+    t.textContent=names[a]; svg.appendChild(t);
+  }
+  document.getElementById("afcap").textContent =
+    zone.size===n ? "· all disputed" : `· dashed = agreed by both`;
+}
+
+/* ---------- the ladder ---------- */
+function chips(vec,names,moved){
+  return `<div class="chips">`+vec.map((x,a)=>
+    `<span class="chip ${x}${moved&&moved.has(a)?" moved":""}">${names[a]}<span class="st">${x==="in"?"in":x==="out"?"out":"?"}</span></span>`
+  ).join("")+`</div>`;
+}
+function render(){
+  const {n,labs,path,names,who}=model;
+  document.getElementById("vD").textContent=model.dist;
+  document.getElementById("vI").textContent=model.inc;
+  document.getElementById("rcap").textContent =
+    path.length? `· ${path.length-1} steps, none above ${model.inc}` : "";
+  renderAF();
+
+  const L=document.getElementById("ladder");
+  let html="";
+  path.forEach((idx,k)=>{
+    const v=labVec(n,labs[idx]);
+    const cls=k<step?"done":k===step?"now done":"upcoming";
+    const last=k===path.length-1;
+    let title,say="",moved=null;
+    if(k===0){ title=`${who[0]} starts here`; }
+    else{
+      const ch=changed(n,labs[path[k-1]],labs[idx]);
+      moved=new Set(ch);
+      const vTo=labVec(n,labs[idx]);
+      const releasing=ch.some(a=>vTo[a]==="undec");
+      const inZone=ch.filter(a=>model.zone.has(a)).map(a=>names[a]);
+      const rip=ch.filter(a=>!model.zone.has(a)).map(a=>names[a]);
+      title = last? `${who[1]}'s position` : `step ${k}`;
+      say = releasing
+        ? `Reopening ${inZone.length?inZone.join(", "):"the contested pair"}.`
+        : `Committing ${inZone.length?inZone.join(", "):"the contested pair"}.`;
+      if(rip.length) say += ` <span class="rip">${rip.join(", ")}</span> ${rip.length===1?"comes":"come"} loose too, though both agree on ${rip.length===1?"it":"them"}.`;
+    }
+    const w = k===0? "" : `<span class="wt">${weight(n,labs[path[k-1]],labs[idx])}</span>`;
+    html += `<li class="rung ${cls}">
+      <div class="gutter">${k===0?"":w}<span class="dot"></span>${last?"":'<span class="stem"></span>'}</div>
+      <div class="body"><span class="who">${title}</span>
+        ${say?`<p class="say">${say}</p>`:""}
+        ${chips(v,names,k<=step?moved:null)}</div></li>`;
+  });
+  L.innerHTML=html;
+
+  document.getElementById("closing").innerHTML =
+    (model.inc>model.dist
+      ? `<b>The incline is larger than the distance here.</b> `
+      : model.inc<model.dist ? `<b>Staging pays here.</b> ` : "")
+    + cur.closing;
+
+  const last=path.length?path.length-1:0;
+  document.getElementById("bStart").disabled=step<=0;
+  document.getElementById("bBack").disabled=step<=0;
+  document.getElementById("bFwd").disabled=step>=last;
+  document.getElementById("bEnd").disabled=step>=last;
+
+  const now=document.querySelector(".rung.now");
+  if(now&&step>0) now.scrollIntoView({block:"center",behavior:"smooth"});
+}
+
+/* ---------- wiring ---------- */
+const rail=document.getElementById("rail");
+FW.forEach(f=>{
+  const b=document.createElement("button");
+  b.className="pick"; b.type="button";
+  b.setAttribute("aria-pressed",f.id===cur.id?"true":"false");
+  b.innerHTML=`<b>${f.name}</b><i>${f.sub}</i>`;
+  b.addEventListener("click",()=>{
+    cur=f;
+    [...rail.children].forEach((c,i)=>c.setAttribute("aria-pressed",FW[i].id===f.id?"true":"false"));
+    build();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+  rail.appendChild(b);
+});
+function go(k){const last=Math.max(0,model.path.length-1);step=Math.min(last,Math.max(0,k));render();}
+document.getElementById("bStart").addEventListener("click",()=>go(0));
+document.getElementById("bEnd").addEventListener("click",()=>go(model.path.length-1));
+document.getElementById("bFwd").addEventListener("click",()=>go(step+1));
+document.getElementById("bBack").addEventListener("click",()=>go(step-1));
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight")go(step+1); else if(e.key==="ArrowLeft")go(step-1);
+});
+let tx=null,ty=null;
+document.addEventListener("touchstart",e=>{tx=e.changedTouches[0].clientX;ty=e.changedTouches[0].clientY;},{passive:true});
+document.addEventListener("touchend",e=>{
+  if(tx===null)return;
+  const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>52&&Math.abs(dx)>Math.abs(dy)*1.6){ dx<0?go(step+1):go(step-1); }
+  tx=null;
+},{passive:true});
+
+build();
+</script>

@@ -1,0 +1,865 @@
+<title>Persuasion Incline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,500&display=swap">
+
+<style>
+:root{
+  /* House palette, matching profiles/figs/af-explorer.html and the AI3/JLC
+     figures: IN blue, OUT orange, UNDEC yellow. Those three hues are reserved
+     for labels; route and jump use the house mark/good colors instead. */
+  --ground:#f5f7f9;
+  --surface:#ffffff;
+  --surface-2:#eaeef3;
+  --ink:#141b23;
+  --ink-2:#4c5a68;
+  --ink-3:#7d8b99;
+  --rule:#d8e0e8;
+  --rule-2:#e6ecf2;
+  /* Fills and edge colors are verbatim from the paper figures
+     (profiles/figs/sag-running-profiles.gv, sag-style-palette.org):
+     IN #40cfff, OUT #ffb763, UNDEC #FFFFAA, with the matching darker
+     edge-class colors #006ad1 / #cd8400 / #AAAA00 for text and strokes.
+     UNDEC's #AAAA00 is too light for small text on white, so running text
+     darkens it to #8f8f00; the ripple ring keeps the paper's #AAAA00. */
+  --in:#006ad1;      --in-fill:#40cfff;
+  --out:#cd8400;     --out-fill:#ffb763;
+  --undec:#8f8f00;   --undec-fill:#FFFFAA;
+  --glyph:#141b23;
+  --gentle:#127a4b;  --gentle-soft:#dcefe5;
+  --steep:#8a2f4a;   --steep-soft:#f4dfe5;
+  --ripple:#AAAA00;
+  --on-gentle:#ffffff;
+  --shadow:0 1px 2px rgba(20,27,35,.06),0 8px 24px -12px rgba(20,27,35,.18);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#10161d;
+    --surface:#171f28;
+    --surface-2:#1e2833;
+    --ink:#dfe7ef;
+    --ink-2:#a6b4c3;
+    --ink-3:#78889a;
+    --rule:#293544;
+    --rule-2:#222c39;
+    --in:#4da3ff;      --in-fill:#40cfff;
+    --out:#e0a13a;     --out-fill:#ffb763;
+    --undec:#cfcf4a;   --undec-fill:#FFFFAA;
+    --glyph:#141b23;
+    --gentle:#5fbf8f;  --gentle-soft:#153428;
+    --steep:#e08098;   --steep-soft:#3a1c25;
+    --ripple:#cfcf4a;
+    --on-gentle:#08211c;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#10161d;
+  --surface:#171f28;
+  --surface-2:#1e2833;
+  --ink:#dfe7ef;
+  --ink-2:#a6b4c3;
+  --ink-3:#78889a;
+  --rule:#293544;
+  --rule-2:#222c39;
+  --in:#4da3ff;    --in-fill:#40cfff;
+  --out:#e0a13a;   --out-fill:#ffb763;
+  --undec:#cfcf4a;   --undec-fill:#FFFFAA;
+  --glyph:#141b23;
+  --gentle:#5fbf8f;  --gentle-soft:#153428;
+  --steep:#e08098;   --steep-soft:#3a1c25;
+  --ripple:#cfcf4a;
+  --on-gentle:#08211c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:40px 24px 72px}
+
+header.masthead{
+  display:flex;flex-direction:column;gap:14px;
+  padding-bottom:26px;margin-bottom:30px;
+  border-bottom:1px solid var(--rule);
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+h1{
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-weight:600;font-size:clamp(30px,4.4vw,46px);
+  line-height:1.1;margin:0;letter-spacing:-.015em;text-wrap:balance;
+}
+.standfirst{
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-style:italic;font-size:clamp(16px,1.9vw,19px);
+  color:var(--ink-2);max-width:62ch;margin:0;text-wrap:pretty;
+}
+
+.stage{display:grid;grid-template-columns:288px minmax(0,1fr);gap:26px;align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:1fr}}
+
+.panel{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:10px;
+  box-shadow:var(--shadow);
+}
+.panel-hd{
+  padding:14px 16px 12px;border-bottom:1px solid var(--rule-2);
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+}
+.panel-bd{padding:16px}
+
+/* framework chooser */
+.choices{display:flex;flex-direction:column;gap:2px}
+.choice{
+  display:grid;grid-template-columns:auto 1fr;gap:11px;align-items:baseline;
+  width:100%;text-align:left;cursor:pointer;
+  background:transparent;border:1px solid transparent;border-radius:7px;
+  padding:10px 11px;color:var(--ink);font:inherit;
+}
+.choice:hover{background:var(--surface-2)}
+.choice:focus-visible{outline:2px solid var(--gentle);outline-offset:1px}
+.choice[aria-pressed="true"]{background:var(--surface-2);border-color:var(--rule)}
+.choice .tag{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;
+  color:var(--ink-3);padding-top:2px;
+}
+.choice[aria-pressed="true"] .tag{color:var(--gentle)}
+.choice .nm{font-weight:500;font-size:14.5px;line-height:1.3}
+.choice .sub{grid-column:2;font-size:12.5px;color:var(--ink-3);line-height:1.4;margin-top:2px}
+
+.slider-row{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule-2)}
+.slider-row label{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+}
+.slider-row label b{
+  font-size:15px;letter-spacing:0;color:var(--ripple);
+  font-variant-numeric:tabular-nums;
+}
+input[type=range]{width:100%;margin-top:9px;accent-color:var(--ripple)}
+.slider-note{font-size:12.5px;color:var(--ink-3);margin-top:7px;line-height:1.45}
+.slider-row.disabled{opacity:.4;pointer-events:none}
+
+/* scoreboard */
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--rule-2)}
+.score{padding:16px}
+.score+.score{border-left:1px solid var(--rule-2)}
+.score .k{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+}
+.score .v{
+  font-family:"IBM Plex Serif",Georgia,serif;
+  font-size:40px;font-weight:600;line-height:1.05;margin-top:5px;
+  font-variant-numeric:tabular-nums;
+}
+.score.d .v{color:var(--steep)}
+.score.i .v{color:var(--gentle)}
+.score .cap{font-size:12.5px;color:var(--ink-3);margin-top:3px;line-height:1.4}
+
+.figwrap{overflow-x:auto;padding:6px 10px 2px}
+.subhd{
+  padding:13px 16px 9px;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+  display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;
+}
+.subhd span{letter-spacing:0;text-transform:none;font-size:12.5px;color:var(--ink-3);opacity:.9}
+svg.afsvg{display:block;min-width:460px;width:100%;height:auto}
+svg.lattice{display:block;min-width:520px;width:100%;height:auto}
+
+.legend{
+  display:flex;flex-wrap:wrap;gap:7px 18px;padding:0 16px 14px;
+  font-size:12.5px;color:var(--ink-2);
+}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:3px;flex:none}
+.sw.line{width:20px;height:0;border-top-width:3px;border-top-style:solid;border-radius:0}
+
+/* stepper */
+.stepper{border-top:1px solid var(--rule-2);padding:14px 16px 16px}
+.ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button.act{
+  font:inherit;font-size:13.5px;font-weight:500;
+  padding:7px 15px;border-radius:7px;cursor:pointer;
+  border:1px solid var(--rule);background:var(--surface-2);color:var(--ink);
+}
+button.act:hover{border-color:var(--ink-3)}
+button.act:focus-visible{outline:2px solid var(--gentle);outline-offset:1px}
+button.act.primary{background:var(--gentle);border-color:var(--gentle);color:var(--on-gentle)}
+button.act[disabled]{opacity:.45;cursor:default}
+.stepcount{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;
+  color:var(--ink-3);margin-left:auto;font-variant-numeric:tabular-nums;
+}
+.narration{
+  margin-top:12px;font-size:14.5px;line-height:1.55;color:var(--ink-2);
+  min-height:3.1em;
+}
+.narration b{color:var(--ink);font-weight:600}
+.narration .rip{color:var(--ripple);font-weight:600}
+
+table.labs{
+  border-collapse:collapse;width:100%;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;
+  font-variant-numeric:tabular-nums;
+}
+table.labs th,table.labs td{
+  padding:6px 9px;border-bottom:1px solid var(--rule-2);text-align:center;
+}
+table.labs th{color:var(--ink-3);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+table.labs td.rowname{text-align:left;color:var(--ink-2);white-space:nowrap}
+table.labs tr.cur{background:var(--surface-2)}
+table.labs td.v-in{background:var(--in-fill);color:#1c2733;font-weight:600}
+table.labs td.v-out{background:var(--out-fill);color:#1c2733;font-weight:600}
+table.labs td.v-undec{background:var(--undec-fill);color:#1c2733;font-weight:600}
+table.labs td.chg{box-shadow:inset 0 0 0 1.5px var(--ripple);border-radius:4px}
+.tblwrap{overflow-x:auto;padding:0 16px 16px}
+
+.notes{
+  margin-top:34px;padding-top:26px;border-top:1px solid var(--rule);
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:26px;
+}
+.note h3{
+  font-family:"IBM Plex Serif",Georgia,serif;font-size:17px;font-weight:600;
+  margin:0 0 7px;letter-spacing:-.01em;
+}
+.note p{margin:0;font-size:14.5px;line-height:1.6;color:var(--ink-2);max-width:60ch}
+.note p+p{margin-top:9px}
+code{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.9em;
+  background:var(--surface-2);padding:1px 5px;border-radius:4px;
+}
+footer{
+  margin-top:38px;padding-top:18px;border-top:1px solid var(--rule);
+  font-size:12.5px;color:var(--ink-3);
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.node-g,.edge-g{transition:opacity .18s ease}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Paths of least resistance · CMNA 2026</div>
+  <h1>Why concessions are not local</h1>
+  <p class="standfirst">Distance asks how far apart two positions are. Persuasion asks how much has to
+  come loose at once. Pick a framework and walk the route.</p>
+</header>
+
+<div class="stage">
+
+  <div>
+    <div class="panel">
+      <div class="panel-hd">The disagreement</div>
+      <div class="panel-bd">
+        <div class="choices" id="choices"></div>
+        <div class="slider-row" id="ballastRow">
+          <label for="B">Ballast <b id="Bval">1</b></label>
+          <input type="range" id="B" min="0" max="6" value="1" step="1">
+          <p class="slider-note" id="Bnote"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <div class="panel-hd">Positions</div>
+      <div class="tblwrap" style="padding-top:12px">
+        <table class="labs" id="labtable"></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="scores">
+      <div class="score d">
+        <div class="k">Distance</div>
+        <div class="v" id="vDist">–</div>
+        <div class="cap">labels separating the two positions</div>
+      </div>
+      <div class="score i">
+        <div class="k">Incline</div>
+        <div class="v" id="vInc">–</div>
+        <div class="cap">largest concession on the gentlest route, which can exceed the distance</div>
+      </div>
+    </div>
+
+    <div class="afbox">
+      <div class="subhd">The framework <span id="afcap"></span></div>
+      <div class="figwrap" style="padding-top:0"><svg class="afsvg" id="afsvg" viewBox="0 0 760 210" role="img"
+        aria-label="The argumentation framework, with each argument colored by its current label"></svg></div>
+    </div>
+
+    <div class="subhd" style="border-top:1px solid var(--rule-2);padding-top:13px">
+      The lattice of positions <span>every complete labeling, ordered by commitment</span>
+    </div>
+    <div class="figwrap"><svg class="lattice" id="svg" viewBox="0 0 760 400" role="img"
+      aria-label="The lattice of complete labelings, with the least-resistance route highlighted"></svg></div>
+
+    <div class="legend">
+      <span><i class="sw" style="background:var(--in-fill);border:1.5px solid var(--in)"></i> in</span>
+      <span><i class="sw" style="background:var(--undec-fill);border:1.5px solid var(--undec)"></i> undecided</span>
+      <span><i class="sw" style="background:var(--out-fill);border:1.5px solid var(--out)"></i> out</span>
+      <span><i class="sw" style="background:transparent;border:1.5px dashed var(--ink-3)"></i> agreed by both parties</span>
+      <span><i class="sw line" style="border-color:var(--gentle)"></i> least-resistance route</span>
+      <span><i class="sw line" style="border-color:var(--steep);border-top-style:dashed"></i> asking for it all at once (distance)</span>
+    </div>
+
+    <div class="stepper">
+      <div class="ctrls" role="group" aria-label="Walk the route">
+        <button class="act" id="btnStart" title="Back to the starting position">&#9198;&nbsp; Start</button>
+        <button class="act" id="btnEnd" title="Jump to the target position">End &nbsp;&#9197;</button>
+        <button class="act primary" id="btnFwd" title="Next step">Forward &nbsp;&#9654;</button>
+        <button class="act" id="btnBack" title="Previous step">&#9664;&nbsp; Backward</button>
+        <span class="stepcount" id="stepcount"></span>
+      </div>
+      <p class="narration" id="narration"></p>
+    </div>
+  </div>
+</div>
+
+<div class="notes">
+  <div class="note">
+    <h3>What a step costs</h3>
+    <p>A step moves to an adjacent complete labeling, and its price is the number of arguments
+    whose label changes. A route costs what its <em>worst</em> step costs, not what its steps
+    add up to. That is the whole model: a long negotiation of small concessions can succeed
+    where one large demand is refused.</p>
+  </div>
+  <div class="note">
+    <h3>The ripple</h3>
+    <p>Releasing a commitment releases everything whose only standing justification it was.
+    Those arguments are the <span style="color:var(--ripple);font-weight:600">ripple</span> of
+    the step. Watch the framework at the top: arguments both parties agree on are drawn with a
+    dashed outline, and the demo rings one at the moment it goes undecided.</p>
+    <p>Watch what happens when you add an outside applicant that <em>both</em> parties reject:
+    the disagreement does not change, and the incline goes up anyway.</p>
+    <p><em>Dinner: the ripple</em> is not our example. It is Example 1 of Alfano, Greco, Parisi
+    and Trubitsyna (KR 2024), built to study counterfactual explanations. The effect was
+    already in it.</p>
+  </div>
+  <div class="note">
+    <h3>Ballast and ridges</h3>
+    <p>Agreed claims that hang on the contested one are <em>ballast</em>. Raise the slider and
+    the incline rises with it without bound, though the parties still disagree about exactly
+    two arguments.</p>
+    <p>On <em>The ridge</em>, the gentlest route refuses to meet in the middle. It goes through
+    a cross-party position that neither side holds, chosen so the shared rejection never comes
+    loose.</p>
+  </div>
+</div>
+
+<footer>
+  Companion to <em>Why Concessions Are Not Local: Paths of Least Resistance in Abstract
+  Argumentation</em> · Bertram Ludäscher and Shawn Bowers · every labeling, edge weight and
+  incline on this page is computed in the browser from the framework, not hard-coded.
+  Label colors follow the house palette shared with the AI³ and JLC figures:
+  <span style="color:var(--in);font-weight:600">in</span> blue,
+  <span style="color:var(--out);font-weight:600">out</span> orange,
+  <span style="color:var(--undec);font-weight:600">undecided</span> yellow.
+</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ---------- complete-labeling machinery ---------- */
+// att[a] = bitmask of attackers of a
+function mkAtt(n, edges){
+  const att = new Array(n).fill(0);
+  for (const [x,y] of edges) att[y] |= (1<<x);
+  return att;
+}
+function completeLabelings(n, att){
+  const out = [];
+  for (let inM = 0; inM < (1<<n); inM++){
+    let outM = 0;
+    for (let a=0;a<n;a++) if (att[a] & inM) outM |= (1<<a);
+    if (inM & outM) continue;
+    let ok = true;
+    for (let a=0;a<n;a++){
+      const allAttOut = (att[a] & ~outM & ((1<<n)-1)) === 0;
+      const isIn = ((inM>>a)&1) === 1;
+      if (isIn !== allAttOut){ ok=false; break; }
+    }
+    if (ok) out.push([inM,outM]);
+  }
+  return out;
+}
+function labVec(n,L){
+  const v=[];
+  for(let a=0;a<n;a++) v.push((L[0]>>a&1)?"in":(L[1]>>a&1)?"out":"undec");
+  return v;
+}
+function weight(n,A,B){
+  const va=labVec(n,A), vb=labVec(n,B);
+  let w=0; for(let a=0;a<n;a++) if(va[a]!==vb[a]) w++;
+  return w;
+}
+function changed(n,A,B){
+  const va=labVec(n,A), vb=labVec(n,B), s=[];
+  for(let a=0;a<n;a++) if(va[a]!==vb[a]) s.push(a);
+  return s;
+}
+const leq = (A,B) => ((A[0]&~B[0])===0) && ((A[1]&~B[1])===0);
+const strictly = (A,B) => leq(A,B) && !(A[0]===B[0]&&A[1]===B[1]);
+
+function coveringEdges(n,labs){
+  const E=[];
+  for(let i=0;i<labs.length;i++) for(let j=0;j<labs.length;j++){
+    if(i===j) continue;
+    if(!strictly(labs[i],labs[j])) continue;
+    let cov=true;
+    for(let k=0;k<labs.length;k++){
+      if(k===i||k===j) continue;
+      if(strictly(labs[i],labs[k]) && strictly(labs[k],labs[j])){cov=false;break;}
+    }
+    if(cov) E.push({a:i,b:j,w:weight(n,labs[i],labs[j])});
+  }
+  return E;
+}
+// bottleneck route: smallest tau such that s,t connected using edges of weight <= tau
+function route(n,labs,E,s,t){
+  const ws=[...new Set(E.map(e=>e.w))].sort((x,y)=>x-y);
+  for(const tau of ws){
+    const adj=new Map();
+    for(const e of E) if(e.w<=tau){
+      if(!adj.has(e.a))adj.set(e.a,[]); if(!adj.has(e.b))adj.set(e.b,[]);
+      adj.get(e.a).push(e.b); adj.get(e.b).push(e.a);
+    }
+    const prev=new Map([[s,null]]), q=[s];
+    while(q.length){
+      const u=q.shift();
+      if(u===t){
+        const path=[]; let c=t;
+        while(c!==null&&c!==undefined){path.unshift(c); c=prev.get(c);}
+        return {tau, path};
+      }
+      for(const v of (adj.get(u)||[])) if(!prev.has(v)){prev.set(v,u); q.push(v);}
+    }
+  }
+  return {tau:Infinity, path:[]};
+}
+
+/* ---------- the frameworks ---------- */
+function ballastAF(B){
+  const n = 2+B;
+  const e = [[0,1],[1,0]];
+  for(let i=0;i<B;i++){ e.push([0,2+i]); e.push([1,2+i]); }
+  const names = ["a","b"]; for(let i=0;i<B;i++) names.push("c"+(B>1?(i+1):""));
+  return {n, edges:e, names,
+    P0:["in","out",...Array(B).fill("out")],
+    Pn:["out","in",...Array(B).fill("out")]};
+}
+
+const MENU_EDGES=[[0,1],[1,0],[0,2],[2,0],[1,2],[2,1],[3,4],[4,3],[1,3],[2,3]];
+const MENU_NAMES=["fish","meat","pasta","white","red"];
+/* strip/table glyph: F M P W R for word names, verbatim for a, b, a₁ ... */
+const glyph = nm => nm.length<=2 ? nm : nm[0].toUpperCase();
+
+const FRAMEWORKS = [
+  {
+    id:"menu-ripple", tag:"menu", name:"Dinner: the ripple",
+    sub:"meat+red vs pasta+red. They agree about the wine.",
+    build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
+      P0:["out","in","out","out","in"], Pn:["out","out","in","out","in"], who:["Cleo","Dana"]}),
+    story:"The chef offers fish, meat or pasta, with white or red, and will not pair white with meat or pasta. This is Example 1 of Alfano et al. (KR 2024). Cleo wants meat, Dana wants pasta, and both ruled out the fish."
+  },
+  {
+    id:"menu-staging", tag:"menu", name:"Dinner: staging pays",
+    sub:"fish+white vs meat+red. Settle the wine first.",
+    build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
+      P0:["in","out","out","in","out"], Pn:["out","in","out","out","in"], who:["Cleo","Dana"]}),
+    story:"Same framework, further apart: the two menus share nothing. The route changes the wine first while the fish still stands, then changes the main under the shelter of a committed wine."
+  },
+  {
+    id:"one", tag:"F₂", name:"One contested slot",
+    sub:"Ada backs a, Ben backs b, one hire.",
+    build:()=>({n:2, edges:[[0,1],[1,0]], names:["a","b"],
+      P0:["in","out"], Pn:["out","in"]}),
+    story:"Two candidates, one slot, nothing else at stake. The only way across is to reopen the slot and re-decide it."
+  },
+  {
+    id:"outsider", tag:"F₃", name:"An outside applicant",
+    sub:"Both reject c, for different reasons.",
+    build:()=>ballastAF(1),
+    story:"They agree c is out. She rejects c because a is better; he rejects c because b is. The agreement is not in dispute, and it still costs."
+  },
+  {
+    id:"ballast", tag:"F_B", name:"Ballast",
+    sub:"B agreed claims hang on the contested slot.",
+    build:()=>ballastAF(+document.getElementById("B").value),
+    story:"Every one of the B agreed rejections rests on the hire going through. Suspend the hire and they all spring open in the same step."
+  },
+  {
+    id:"slots", tag:"F₂×2", name:"Two independent slots",
+    sub:"Distance 4, and it still only costs 2.",
+    build:()=>({n:4, edges:[[0,1],[1,0],[2,3],[3,2]], names:["a₁","b₁","a₂","b₂"],
+      P0:["in","out","in","out"], Pn:["out","in","out","in"]}),
+    story:"Nothing links the two slots, so they can be renegotiated one at a time. The distance grows with the number of slots; the incline does not."
+  },
+  {
+    id:"ridge", tag:"E8", name:"The ridge",
+    sub:"The gentlest route avoids the middle.",
+    build:()=>({n:5, edges:[[0,3],[3,0],[1,2],[2,1],[0,4],[1,4]],
+      names:["0","1","2","3","4"],
+      P0:["in","out","in","out","out"], Pn:["out","in","out","in","out"]}),
+    story:"Claim 4 on the funds is blocked by 0 and by 1, and by nothing else. Meeting in the middle releases both blockers at once, so the route goes over a ridge instead."
+  }
+];
+
+/* ---------- state ---------- */
+let cur = FRAMEWORKS[0], model=null, step=0;
+
+function findIdx(n,labs,vec){
+  for(let i=0;i<labs.length;i++){
+    const v=labVec(n,labs[i]);
+    if(v.every((x,k)=>x===vec[k])) return i;
+  }
+  return -1;
+}
+
+function build(){
+  const spec = cur.build();
+  const att = mkAtt(spec.n, spec.edges);
+  const labs = completeLabelings(spec.n, att);
+  const E = coveringEdges(spec.n, labs);
+  const s = findIdx(spec.n,labs,spec.P0), t = findIdx(spec.n,labs,spec.Pn);
+  const r = route(spec.n,labs,E,s,t);
+  const dist = weight(spec.n,labs[s],labs[t]);
+  // conflict zone: arguments the two positions differ on
+  const va=labVec(spec.n,labs[s]), vb=labVec(spec.n,labs[t]);
+  const zone = new Set(); for(let a=0;a<spec.n;a++) if(va[a]!==vb[a]) zone.add(a);
+  model = {...spec, who: spec.who || ["Ada","Ben"], att, labs, E, s, t, dist, inc:r.tau, path:r.path, zone};
+  step = 0;
+  render();
+}
+
+/* ---------- rendering ---------- */
+const SVG="http://www.w3.org/2000/svg";
+function el(t,attrs){const e=document.createElementNS(SVG,t);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+/* ---------- the framework diagram ---------- */
+function afPositions(id, n){
+  const P=[];
+  if(id==="menu-ripple"||id==="menu-staging"){
+    P[0]={x:200,y:62}; P[1]={x:380,y:62}; P[2]={x:560,y:62};   // fish meat pasta
+    P[3]={x:290,y:168}; P[4]={x:470,y:168};                     // white red
+  }
+  else if(id==="one"){ P[0]={x:305,y:105}; P[1]={x:455,y:105}; }
+  else if(id==="outsider"||id==="ballast"){
+    P[0]={x:305,y:62}; P[1]={x:455,y:62};
+    const B=n-2;
+    for(let i=0;i<B;i++){
+      const span=Math.min(560, 92*Math.max(1,B-1));
+      const x = B===1 ? 380 : 380 - span/2 + (span/(B-1))*i;
+      P[2+i]={x, y:166};
+    }
+  }
+  else if(id==="slots"){
+    P[0]={x:190,y:105}; P[1]={x:330,y:105};
+    P[2]={x:430,y:105}; P[3]={x:570,y:105};
+  }
+  else if(id==="ridge"){
+    P[3]={x:160,y:70}; P[0]={x:310,y:70};
+    P[1]={x:460,y:70}; P[2]={x:610,y:70};
+    P[4]={x:385,y:168};
+  }
+  for(let a=0;a<n;a++) if(!P[a]) P[a]={x:80+a*90,y:105};
+  return P;
+}
+
+function renderAF(){
+  const {n,names,edges,labs,path,zone}=model;
+  const svg=document.getElementById("afsvg");
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+  const defs=el("defs",{});
+  const mk=(id,color)=>{
+    const m=el("marker",{id,viewBox:"0 0 10 10",refX:"9.5",refY:"5",
+      markerWidth:"6.5",markerHeight:"6.5",orient:"auto-start-reverse"});
+    m.appendChild(el("path",{d:"M 0 1 L 10 5 L 0 9 z",fill:color}));
+    return m;
+  };
+  defs.appendChild(mk("ah","var(--ink-3)"));
+  svg.appendChild(defs);
+
+  const P=afPositions(cur.id,n);
+  const R=21;
+  const curIdx = path.length? path[Math.min(step,path.length-1)] : model.s;
+  const v = labVec(n, labs[curIdx]);
+  // which args changed on the step just taken
+  const justChanged = (step>0 && path.length>step)
+    ? new Set(changed(n,labs[path[step-1]],labs[path[step]])) : new Set();
+
+  const has=(x,y)=>edges.some(e=>e[0]===x&&e[1]===y);
+  const gE=el("g",{}); svg.appendChild(gE);
+  for(const [x,y] of edges){
+    const p=P[x], q=P[y]; if(!p||!q) continue;
+    const dx=q.x-p.x, dy=q.y-p.y, L=Math.hypot(dx,dy)||1;
+    const ux=dx/L, uy=dy/L;
+    const mutual = has(y,x);
+    const bend = mutual ? 16 : 0;
+    // trim to node edges
+    const sx=p.x+ux*R, sy=p.y+uy*R, tx=q.x-ux*(R+3), ty=q.y-uy*(R+3);
+    if(bend){
+      const mx=(sx+tx)/2 - uy*bend, my=(sy+ty)/2 + ux*bend;
+      gE.appendChild(el("path",{d:`M ${sx} ${sy} Q ${mx} ${my} ${tx} ${ty}`,
+        fill:"none",stroke:"var(--ink-3)","stroke-width":1.5,"marker-end":"url(#ah)",opacity:.85}));
+    } else {
+      gE.appendChild(el("line",{x1:sx,y1:sy,x2:tx,y2:ty,
+        stroke:"var(--ink-3)","stroke-width":1.5,"marker-end":"url(#ah)",opacity:.85}));
+    }
+  }
+
+  const gN=el("g",{}); svg.appendChild(gN);
+  for(let a=0;a<n;a++){
+    const p=P[a]; if(!p) continue;
+    const lab=v[a];
+    const fill = lab==="in"?"var(--in-fill)":lab==="undec"?"var(--undec-fill)":"var(--out-fill)";
+    const stroke= lab==="in"?"var(--in)":lab==="undec"?"var(--undec)":"var(--out)";
+    const agreed = !zone.has(a);
+    const ringing = justChanged.has(a) && agreed;
+    if(ringing){
+      gN.appendChild(el("circle",{cx:p.x,cy:p.y,r:R+6,fill:"none",
+        stroke:"var(--ripple)","stroke-width":2,opacity:.55}));
+    }
+    gN.appendChild(el("circle",{cx:p.x,cy:p.y,r:R,fill,stroke:"var(--glyph)",
+      "stroke-width":1.4,
+      "stroke-dasharray": agreed && lab!=="undec" ? "3 3" : "none"}));
+    const t=el("text",{x:p.x,y:p.y+5,"text-anchor":"middle",
+      "font-family":"IBM Plex Mono, monospace","font-size":14,"font-weight":600,
+      fill:"var(--glyph)"});
+    t.textContent=names[a]; gN.appendChild(t);
+  }
+
+  document.getElementById("afcap").textContent =
+    zone.size===n ? "every argument is disputed"
+                  : `dashed = the ${n-zone.size} argument${n-zone.size===1?"":"s"} both parties agree on`;
+}
+
+function commitCount(n,L){const v=labVec(n,L);return v.filter(x=>x!=="undec").length;}
+
+function render(){
+  const {n,labs,E,s,t,path,names}=model;
+
+  document.getElementById("vDist").textContent = model.dist;
+  document.getElementById("vInc").textContent  = model.inc;
+
+  renderAF();
+
+  /* --- lattice --- */
+  const svg=document.getElementById("svg");
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  // padTop leaves room for the dashed jump arc and its badge, which are drawn
+  // above the highest row -- and both endpoints sit on that row whenever they
+  // are two preferred labelings.
+  const W=760,H=400,padTop=96,padBot=46;
+
+  const levels=new Map();
+  labs.forEach((L,i)=>{
+    const c=commitCount(n,L);
+    if(!levels.has(c)) levels.set(c,[]);
+    levels.get(c).push(i);
+  });
+  const keys=[...levels.keys()].sort((a,b)=>a-b);
+  const pos=new Map();
+  keys.forEach((k,ki)=>{
+    const row=levels.get(k);
+    const y = H-padBot - (ki/(Math.max(1,keys.length-1)))*(H-padTop-padBot);
+    row.forEach((idx,j)=>{
+      const x = W/2 + (j-(row.length-1)/2) * Math.min(190, (W-140)/Math.max(1,row.length));
+      pos.set(idx,{x,y});
+    });
+  });
+
+  const onPath=new Set();
+  for(let i=0;i+1<path.length;i++) onPath.add(path[i]+"-"+path[i+1]), onPath.add(path[i+1]+"-"+path[i]);
+
+  const gE=el("g",{class:"edge-g"}); svg.appendChild(gE);
+  for(const e of E){
+    const p=pos.get(e.a),q=pos.get(e.b); if(!p||!q) continue;
+    const hot=onPath.has(e.a+"-"+e.b);
+    gE.appendChild(el("line",{x1:p.x,y1:p.y,x2:q.x,y2:q.y,
+      stroke:hot?"var(--gentle)":"var(--rule)","stroke-width":hot?3:1.4,
+      "stroke-linecap":"round",opacity:hot?1:.85}));
+    const mx=(p.x+q.x)/2,my=(p.y+q.y)/2;
+    gE.appendChild(el("rect",{x:mx-11,y:my-9,width:22,height:18,rx:5,
+      fill:"var(--surface)",stroke:hot?"var(--gentle)":"var(--rule)","stroke-width":1}));
+    const tw=el("text",{x:mx,y:my+4,"text-anchor":"middle",
+      "font-family":"IBM Plex Mono, monospace","font-size":11.5,
+      fill:hot?"var(--gentle)":"var(--ink-3)","font-weight":hot?600:400});
+    tw.textContent=e.w; gE.appendChild(tw);
+  }
+
+  // the refused jump
+  const ps=pos.get(s),pt=pos.get(t);
+  if(ps&&pt){
+    gE.appendChild(el("path",{
+      d:`M ${ps.x} ${ps.y} Q ${(ps.x+pt.x)/2} ${Math.min(ps.y,pt.y)-56} ${pt.x} ${pt.y}`,
+      fill:"none",stroke:"var(--steep)","stroke-width":2,"stroke-dasharray":"7 5",opacity:.85}));
+    const lx=(ps.x+pt.x)/2, ly=Math.min(ps.y,pt.y)-40;
+    gE.appendChild(el("rect",{x:lx-15,y:ly-10,width:30,height:19,rx:5,
+      fill:"var(--steep-soft)",stroke:"var(--steep)","stroke-width":1}));
+    const jt=el("text",{x:lx,y:ly+4,"text-anchor":"middle",
+      "font-family":"IBM Plex Mono, monospace","font-size":11.5,fill:"var(--steep)","font-weight":600});
+    jt.textContent=model.dist; gE.appendChild(jt);
+  }
+
+  const gN=el("g",{class:"node-g"}); svg.appendChild(gN);
+  labs.forEach((L,i)=>{
+    const p=pos.get(i); if(!p) return;
+    const v=labVec(n,L);
+    const isCur = path.length? (i===path[Math.min(step,path.length-1)]) : false;
+    const isEnd = (i===s||i===t);
+    const cw = Math.max(46, Math.min(120, n*17+10));
+    gN.appendChild(el("rect",{x:p.x-cw/2,y:p.y-15,width:cw,height:30,rx:8,
+      fill:isCur?"var(--gentle-soft)":"var(--surface)",
+      stroke:isCur?"var(--gentle)":(isEnd?"var(--ink-3)":"var(--rule)"),
+      "stroke-width":isCur?2.5:(isEnd?1.8:1)}));
+    const g2=el("g",{}); gN.appendChild(g2);
+    const chW = cw/ n;
+    v.forEach((val,a)=>{
+      const tx = p.x - cw/2 + chW*(a+.5);
+      /* BOY cells with the argument's letter, as in the paper figures */
+      g2.appendChild(el("rect",{x:p.x-cw/2+chW*a+1.2,y:p.y-11,width:chW-2.4,height:22,rx:3,
+        fill: val==="in"?"var(--in-fill)":val==="out"?"var(--out-fill)":"var(--undec-fill)"}));
+      const tt=el("text",{x:tx,y:p.y+4.5,"text-anchor":"middle",
+        "font-family":"IBM Plex Mono, monospace","font-size":Math.min(13,Math.max(9.5,chW*0.85)),
+        "font-weight":600, fill:"#1c2733"});
+      tt.textContent = glyph(names[a]);
+      g2.appendChild(tt);
+    });
+    if(isEnd){
+      const lt=el("text",{x:p.x,y:i===s?p.y+30:p.y-21,"text-anchor":"middle",
+        "font-family":"IBM Plex Sans, sans-serif","font-size":12,fill:"var(--ink-2)","font-weight":500});
+      lt.textContent = i===s? model.who[0] : model.who[1];
+      gN.appendChild(lt);
+    }
+  });
+
+  /* --- table --- */
+  const tbl=document.getElementById("labtable");
+  let html="<tr><th></th>"+names.map(nm=>`<th>${nm}</th>`).join("")+"</tr>";
+  const rows = path.length? path : [s,t];
+  rows.forEach((idx,k)=>{
+    const v=labVec(n,model.labs[idx]);
+    const prev = k>0? labVec(n,model.labs[rows[k-1]]) : null;
+    const cls = k===step? ' class="cur"' : "";
+    const nm = idx===s? model.who[0] : idx===t? model.who[1] : "step "+k;
+    html+=`<tr${cls}><td class="rowname">${nm}</td>`+
+      v.map((x,a)=>{
+        const ch = prev && prev[a]!==x && k<=step;
+        return `<td class="v-${x}${ch?" chg":""}">${glyph(names[a])}</td>`;
+      }).join("")+"</tr>";
+  });
+  tbl.innerHTML=html;
+
+  /* --- narration --- */
+  const nar=document.getElementById("narration");
+  const sc=document.getElementById("stepcount");
+  const last = path.length? path.length-1 : 0;
+  sc.textContent = path.length? `step ${step} of ${last}` : "";
+  const atStart = step<=0, atEnd = !path.length || step>=last;
+  document.getElementById("btnStart").disabled = atStart;
+  document.getElementById("btnBack").disabled  = atStart;
+  document.getElementById("btnFwd").disabled   = atEnd;
+  document.getElementById("btnEnd").disabled   = atEnd;
+
+  if(step===0){
+    const d=model.dist, i=model.inc;
+    let verdict;
+    if(i<d){
+      verdict = `Asking for it all at once means <b style="color:var(--steep)">${d}</b> labels.
+        Staged, no single step exceeds <b style="color:var(--gentle)">${i}</b>. Staging pays.`;
+    } else if(i>d){
+      verdict = `The two positions differ on only <b style="color:var(--steep)">${d}</b> labels,
+        and yet <em>no</em> route between them moves fewer than <b style="color:var(--gentle)">${i}</b>
+        at a time. The extra is carried by arguments nobody disputes.`;
+    } else {
+      verdict = `Distance and incline agree here, both <b style="color:var(--gentle)">${i}</b>:
+        there is nothing to be gained by staging.`;
+    }
+    nar.innerHTML = `<b>${cur.name}.</b> ${cur.story} ${verdict}`;
+  } else {
+    const from=model.labs[path[step-1]], to=model.labs[path[step]];
+    const ch=changed(n,from,to);
+    const inZone = ch.filter(a=>model.zone.has(a)).map(a=>names[a]);
+    const ripple = ch.filter(a=>!model.zone.has(a)).map(a=>names[a]);
+    const vTo=labVec(n,to);
+    const releasing = ch.some(a=>vTo[a]==="undec");
+    let msg = releasing
+      ? `Reopening ${inZone.length?"<b>"+inZone.join(", ")+"</b>":"the contested pair"}.`
+      : `Committing ${inZone.length?"<b>"+inZone.join(", ")+"</b>":"the contested pair"}.`;
+    if(ripple.length){
+      msg += ` <span class="rip">${ripple.join(", ")}</span> ${ripple.length===1?"comes":"come"} loose too,
+        though both parties agree on ${ripple.length===1?"it":"them"}. That is the ripple.`;
+    }
+    msg += ` Step size <b>${weight(n,from,to)}</b>.`;
+    if(step===path.length-1) msg += ` Arrived, with no step above ${model.inc}.`;
+    nar.innerHTML = msg;
+  }
+}
+
+/* ---------- wiring ---------- */
+const choices=document.getElementById("choices");
+FRAMEWORKS.forEach(f=>{
+  const b=document.createElement("button");
+  b.className="choice"; b.type="button";
+  b.setAttribute("aria-pressed", f.id===cur.id ? "true":"false");
+  b.innerHTML=`<span class="tag">${f.tag}</span><span class="nm">${f.name}</span><span class="sub">${f.sub}</span>`;
+  b.addEventListener("click",()=>{
+    cur=f;
+    [...choices.children].forEach((c,i)=>c.setAttribute("aria-pressed", FRAMEWORKS[i].id===f.id?"true":"false"));
+    document.getElementById("ballastRow").classList.toggle("disabled", f.id!=="ballast");
+    build();
+  });
+  choices.appendChild(b);
+});
+
+const Bin=document.getElementById("B");
+function bnote(){
+  const B=+Bin.value;
+  document.getElementById("Bval").textContent=B;
+  document.getElementById("Bnote").textContent =
+    B===0 ? "No ballast: the bare contested slot."
+          : `${B} agreed rejection${B>1?"s":""} resting on the contested slot. Incline should read ${B+2}.`;
+}
+Bin.addEventListener("input",()=>{ bnote(); if(cur.id==="ballast") build(); });
+bnote();
+document.getElementById("ballastRow").classList.add("disabled");
+
+function goto(k){
+  const last=Math.max(0,model.path.length-1);
+  step=Math.min(last,Math.max(0,k));
+  render();
+}
+document.getElementById("btnStart").addEventListener("click",()=>goto(0));
+document.getElementById("btnBack").addEventListener("click",()=>goto(step-1));
+document.getElementById("btnFwd").addEventListener("click",()=>goto(step+1));
+document.getElementById("btnEnd").addEventListener("click",()=>goto(model.path.length-1));
+document.addEventListener("keydown",e=>{
+  if(e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName||"")) return;
+  if(e.key==="ArrowRight"){goto(step+1);e.preventDefault();}
+  else if(e.key==="ArrowLeft"){goto(step-1);e.preventDefault();}
+  else if(e.key==="Home"){goto(0);e.preventDefault();}
+  else if(e.key==="End"){goto(model.path.length-1);e.preventDefault();}
+});
+
+build();
+</script>
