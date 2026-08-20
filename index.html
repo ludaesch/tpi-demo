@@ -83,11 +83,11 @@ body{
   line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:1180px;margin:0 auto;padding:40px 24px 72px}
+.wrap{max-width:1320px;margin:0 auto;padding:22px 24px 44px}
 
 header.masthead{
-  display:flex;flex-direction:column;gap:14px;
-  padding-bottom:26px;margin-bottom:30px;
+  display:flex;flex-direction:column;gap:8px;
+  padding-bottom:12px;margin-bottom:16px;
   border-bottom:1px solid var(--rule);
 }
 .eyebrow{
@@ -97,7 +97,7 @@ header.masthead{
 }
 h1{
   font-family:"IBM Plex Serif",Georgia,serif;
-  font-weight:600;font-size:clamp(30px,4.4vw,46px);
+  font-weight:600;font-size:clamp(26px,3.6vw,38px);
   line-height:1.1;margin:0;letter-spacing:-.015em;text-wrap:balance;
 }
 .standfirst{
@@ -314,14 +314,14 @@ footer{
 
     <div class="afbox">
       <div class="subhd">The framework <span id="afcap"></span></div>
-      <div class="figwrap" style="padding-top:0"><svg class="afsvg" id="afsvg" viewBox="0 0 760 210" role="img"
+      <div class="figwrap" style="padding-top:0"><svg class="afsvg" id="afsvg" viewBox="0 32 760 166" role="img"
         aria-label="The argumentation framework, with each argument colored by its current label"></svg></div>
     </div>
 
     <div class="subhd" style="border-top:1px solid var(--rule-2);padding-top:13px">
       The lattice of positions <span>every complete labeling, ordered by commitment</span>
     </div>
-    <div class="figwrap"><svg class="lattice" id="svg" viewBox="0 0 760 400" role="img"
+    <div class="figwrap"><svg class="lattice" id="svg" viewBox="0 0 760 348" role="img"
       aria-label="The lattice of complete labelings, with the least-resistance route highlighted"></svg></div>
 
     <div class="legend">
@@ -710,7 +710,7 @@ function render(){
   // padTop leaves room for the dashed jump arc and its badge, which are drawn
   // above the highest row -- and both endpoints sit on that row whenever they
   // are two preferred labelings.
-  const W=760,H=400,padTop=96,padBot=46;
+  const W=760,H=348,padTop=80,padBot=38;
 
   // three bands, as in the paper's Figure 1: grounded at the bottom, the
   // fully committed positions on top, every other complete labeling on one
