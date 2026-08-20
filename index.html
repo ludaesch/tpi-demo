@@ -140,6 +140,12 @@ h1{
 .choice[aria-pressed="true"] .tag{color:var(--gentle)}
 .choice .nm{font-weight:500;font-size:14.5px;line-height:1.3}
 .choice .sub{grid-column:2;font-size:12.5px;color:var(--ink-3);line-height:1.4;margin-top:2px}
+.choice .nums{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;
+  font-weight:400;color:var(--ink-3);margin-left:6px;white-space:nowrap;
+}
+.choice .nums .nd{color:var(--steep)}
+.choice .nums .ni{color:var(--gentle)}
 
 .slider-row{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule-2)}
 .slider-row label{
@@ -858,12 +864,25 @@ function render(){
 }
 
 /* ---------- wiring ---------- */
+function quickNums(f){
+  const spec=f.build();
+  const att=mkAtt(spec.n,spec.edges);
+  const labs=completeLabelings(spec.n,att);
+  const E=coveringEdges(spec.n,labs);
+  const sIdx=findIdx(spec.n,labs,spec.P0), tIdx=findIdx(spec.n,labs,spec.Pn);
+  const r=route(spec.n,labs,E,sIdx,tIdx);
+  return {d:weight(spec.n,labs[sIdx],labs[tIdx]), i:r.tau};
+}
+const numsSpan = f => {
+  const q=quickNums(f);
+  return `(d=<span class="nd">${q.d}</span>, inc=<span class="ni">${q.i}</span>)`;
+};
 const choices=document.getElementById("choices");
 FRAMEWORKS.forEach(f=>{
   const b=document.createElement("button");
   b.className="choice"; b.type="button";
   b.setAttribute("aria-pressed", f.id===cur.id ? "true":"false");
-  b.innerHTML=`<span class="tag">${f.tag}</span><span class="nm">${f.name}</span><span class="sub">${f.sub}</span>`;
+  b.innerHTML=`<span class="tag">${f.tag}</span><span class="nm">${f.name} <span class="nums" data-for="${f.id}">${numsSpan(f)}</span></span><span class="sub">${f.sub}</span>`;
   b.addEventListener("click",()=>{
     cur=f;
     [...choices.children].forEach((c,i)=>c.setAttribute("aria-pressed", FRAMEWORKS[i].id===f.id?"true":"false"));
@@ -881,7 +900,12 @@ function bnote(){
     B===0 ? "No ballast: the bare contested slot."
           : `${B} agreed rejection${B>1?"s":""} resting on the contested slot. Incline should read ${B+2}.`;
 }
-Bin.addEventListener("input",()=>{ bnote(); if(cur.id==="ballast") build(); });
+Bin.addEventListener("input",()=>{
+  bnote();
+  const bn=document.querySelector('.nums[data-for="ballast"]');
+  if(bn) bn.innerHTML=numsSpan(FRAMEWORKS.find(f=>f.id==="ballast"));
+  if(cur.id==="ballast") build();
+});
 bnote();
 document.getElementById("ballastRow").classList.add("disabled");
 
