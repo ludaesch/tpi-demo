@@ -761,12 +761,34 @@ function render(){
   // two passes: grey terrain first, the highlighted route (and its weight
   // badges) strictly on top -- otherwise crossing grey edges and badges can
   // bury a green badge and the route reads with the wrong numbers.
-  const drawEdge=(e,hot)=>{
+  // badge collision avoidance: each weight badge slides along its own edge
+  // until it stops overlapping badges already placed (the ridge's eight
+  // top-to-mid edges otherwise stack their badges on one midline).
+  const placedBadges=[];
+  const badgeSpot=(p,q)=>{
+    for(const t of [0.5,0.38,0.62,0.28,0.72,0.2,0.8]){
+      const bx=p.x+(q.x-p.x)*t, by=p.y+(q.y-p.y)*t;
+      if(!placedBadges.some(b=>Math.abs(b.x-bx)<26 && Math.abs(b.y-by)<22)){
+        placedBadges.push({x:bx,y:by}); return {x:bx,y:by};
+      }
+    }
+    const bx=p.x+(q.x-p.x)/2, by=p.y+(q.y-p.y)/2;
+    placedBadges.push({x:bx,y:by}); return {x:bx,y:by};
+  };
+  // route badges claim their spots first (and still draw on top)
+  const hotE=E.filter(e=>onPath.has(e.a+"-"+e.b));
+  const coldE=E.filter(e=>!onPath.has(e.a+"-"+e.b));
+  const hotSpots=new Map();
+  for(const e of hotE){
+    const p=pos.get(e.a),q=pos.get(e.b);
+    if(p&&q) hotSpots.set(e, badgeSpot(p,q));
+  }
+  const drawWithSpot=(e,hot,spot)=>{
     const p=pos.get(e.a),q=pos.get(e.b); if(!p||!q) return;
     gE.appendChild(el("line",{x1:p.x,y1:p.y,x2:q.x,y2:q.y,
       stroke:hot?"var(--gentle)":"var(--rule)","stroke-width":hot?3:1.4,
       "stroke-linecap":"round",opacity:hot?1:.85}));
-    const mx=(p.x+q.x)/2,my=(p.y+q.y)/2;
+    const {x:mx,y:my}=spot||badgeSpot(p,q);
     gE.appendChild(el("rect",{x:mx-11,y:my-9,width:22,height:18,rx:5,
       fill:"var(--surface)",stroke:hot?"var(--gentle)":"var(--rule)","stroke-width":1}));
     const tw=el("text",{x:mx,y:my+4,"text-anchor":"middle",
@@ -774,8 +796,8 @@ function render(){
       fill:hot?"var(--gentle)":"var(--ink-3)","font-weight":hot?600:400});
     tw.textContent=e.w; gE.appendChild(tw);
   };
-  for(const e of E) if(!onPath.has(e.a+"-"+e.b)) drawEdge(e,false);
-  for(const e of E) if(onPath.has(e.a+"-"+e.b))  drawEdge(e,true);
+  for(const e of coldE) drawWithSpot(e,false,null);
+  for(const e of hotE)  drawWithSpot(e,true,hotSpots.get(e));
 
   // the refused jump
   const ps=pos.get(s),pt=pos.get(t);
