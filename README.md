@@ -3,8 +3,7 @@
 Interactive demo for *Persuasion by Inches: Why Concessions Are Not Local*
 (Bertram Ludäscher and Shawn Bowers, CMNA'26; long manuscript in preparation).
 
-- **[Explorer](https://ludaesch.github.io/tpi-demo/)** — desktop
-- **[Phone version](https://ludaesch.github.io/tpi-demo/phone.html)** — experimental
+- **[Explorer](https://ludaesch.github.io/tpi-demo/)**
 
 The page is self-contained: given an argumentation framework it enumerates the
 complete labelings, builds the routing graph, and computes the bottleneck
