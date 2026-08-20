@@ -508,18 +508,18 @@ const FRAMEWORKS = [
     story:"Claim 4 on the funds is blocked by 0 and by 1, and by nothing else. Meeting in the middle releases both blockers at once, so the route goes over a ridge instead."
   },
   {
-    id:"menu-ripple", tag:"menu", name:"Dinner: the ripple",
-    sub:"meat+red vs pasta+red. They agree about the wine.",
-    build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
-      P0:["out","in","out","out","in"], Pn:["out","out","in","out","in"], who:["Cleo","Dana"]}),
-    story:"The chef offers fish, meat or pasta, with white or red, and will not pair white with meat or pasta. This is Example 1 of Alfano et al. (KR 2024). Cleo wants meat, Dana wants pasta, and both ruled out the fish."
-  },
-  {
     id:"menu-staging", tag:"menu", name:"Dinner: staging pays",
     sub:"fish+white vs meat+red. Settle the wine first.",
     build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
       P0:["in","out","out","in","out"], Pn:["out","in","out","out","in"], who:["Cleo","Dana"]}),
     story:"Same framework, further apart: the two menus share nothing. The route changes the wine first while the fish still stands, then changes the main under the shelter of a committed wine."
+  },
+  {
+    id:"menu-ripple", tag:"menu", name:"Dinner: the ripple",
+    sub:"meat+red vs pasta+red. They agree about the wine.",
+    build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
+      P0:["out","in","out","out","in"], Pn:["out","out","in","out","in"], who:["Cleo","Dana"]}),
+    story:"The chef offers fish, meat or pasta, with white or red, and will not pair white with meat or pasta. This is Example 1 of Alfano et al. (KR 2024). Cleo wants meat, Dana wants pasta, and both ruled out the fish."
   }
 ];
 
