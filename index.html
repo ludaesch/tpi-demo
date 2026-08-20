@@ -518,33 +518,33 @@ const glyph = nm => nm.length<=2 ? nm : nm[0].toUpperCase();
 
 const FRAMEWORKS = [
   {
-    id:"one", tag:"F₂", name:"One contested slot",
+    id:"one", tag:"1", name:"One contested slot",
     sub:"Ada backs a, Ben backs b, one hire.",
     build:()=>({n:2, edges:[[0,1],[1,0]], names:["a","b"],
       P0:["in","out"], Pn:["out","in"]}),
     story:"Start here. Ada and Ben are filling one job: Ada backs candidate a, Ben backs candidate b, and hiring one rules out the other (the mutual attack above). Nobody can flip straight from 'a is hired' to 'b is hired': in this model a position is only ever loosened (call the slot open again) or firmed up (settle it). So the route dips through 'slot open' and climbs back, and each of those steps changes two labels: the candidate released and the rival that release lets back in. Two is the floor; nothing in any example ever costs less."
   },
   {
-    id:"slots", tag:"F₂×2", name:"Independent slots",
+    id:"slots", tag:"2", name:"Independent slots",
     sub:"Distance 4, and it still only costs 2.",
     build:()=>({n:4, edges:[[0,1],[1,0],[2,3],[3,2]], names:["a₁","b₁","a₂","b₂"],
       P0:["in","out","in","out"], Pn:["out","in","out","in"]}),
     story:"Now Ada and Ben disagree about two unrelated jobs at once: a₁ against b₁ for the first, a₂ against b₂ for the second. Because the jobs share nothing, they can be renegotiated one at a time: reopen job one, settle it Ben's way, then do the same for job two. The endpoints differ on four labels, yet no single step ever moves more than two. Inching works, and the gap grows without bound as slots are added. The drawn route is one of twelve: every edge here moves exactly two labels, so every simple route between the two positions is gentle. Six take the minimal four steps; four of those pass through the fully undecided center, which asks Ada to hold both jobs open at once, and two keep at most one job open at any moment. The remaining six are gentle detours of six or eight steps: same incline, more meetings. The incline says which routes are gentle, not which gentle route to take; length and how much must be held open at once still distinguish them. So far, persuasion looks easy."
   },
   {
-    id:"outsider", tag:"F₃", name:"An outside applicant",
+    id:"outsider", tag:"3", name:"An outside applicant",
     sub:"Both reject c, for different reasons.",
     build:()=>ballastAF(1),
     story:"Now the surprise. One job again, Ada for a and Ben for b, plus a late outside applicant c whom both of them reject: Ada because her candidate is better, Ben because his is. Step through the route and watch c. To cross from Ada's position to Ben's, the slot must be reopened, and at that moment neither a nor b is standing, so nothing rules c out any more: the rejection they agree on comes loose anyway. The disagreement is two labels; every crossing moves three. Agreement is not free when its reasons are exactly what is being renegotiated."
   },
   {
-    id:"ballast", tag:"F_B", name:"Ballast",
+    id:"ballast", tag:"4", name:"Ballast",
     sub:"B agreed claims hang on the contested slot.",
     build:()=>ballastAF(+document.getElementById("B").value),
     story:"And the surprise has no ceiling. Same contested job, but now B further claims hang on the hire going through: think of B other bids on the same salary line, each blocked only because someone is being hired. Ada and Ben agree on all B rejections. But suspend the hire and every one of them springs open in the same step: there is no way to reopen the slot a little. Drag the slider and watch the incline track B+2 while the two of them still disagree about exactly two arguments. What makes a concession steep can lie entirely outside the disagreement."
   },
   {
-    id:"ridge", tag:"E8", name:"The ridge",
+    id:"ridge", tag:"5", name:"The ridge",
     sub:"The gentlest route avoids the middle.",
     build:()=>({n:5, edges:[[0,3],[3,0],[1,2],[2,1],[0,4],[1,4]],
       names:["0","1","2","3","4"],
@@ -552,14 +552,14 @@ const FRAMEWORKS = [
     story:"Gentleness is a skill, and here is the move that proves it. Two jobs are contested: Ada wants 0 and 2 hired, Ben wants 3 and 1. Argument 4 is a claim on the money that both of them reject, and it is blocked by 0 and by 1, and by nothing else. The obvious gentle plan is to meet in the middle: suspend everything, then rebuild. But shared ground releases both blockers of 4 at once, so the one thing they agree on comes loose, and that route's worst step moves three labels. The gentle route (incline 2) goes over a ridge instead: settle job two Ben's way while job one still stands, pass through '0 and 1 both hired', a cross-party outcome neither side wants and neither ends up with, then turn over job one. At every moment one blocker of 4 is standing, so the shared rejection never reopens. Skilled persuaders know this move: offer a worldview nobody holds, as scaffolding."
   },
   {
-    id:"menu-staging", tag:"menu", name:"Dinner: staging pays",
+    id:"menu-staging", tag:"6", name:"Dinner: staging pays",
     sub:"fish+white vs meat+red. Settle the wine first.",
     build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
       P0:["in","out","out","in","out"], Pn:["out","in","out","out","in"], who:["Cleo","Dana"]}),
     story:"Finally, all of it in a published example, not built by us: the chef's menu of Alfano et al. (KR 2024). Fish, meat and pasta exclude one another; white and red wine exclude one another; and the chef will not pour white with meat or pasta (the pairing rule). Cleo has settled on fish+white, and Dana wants her at meat+red: menus that share nothing, four labels apart. Staging tames the crossing: switch the wine first, while the fish still stands and keeps the pairing rule quiet, then reopen the main under the shelter of a committed red. Never more than three labels move at once. Order matters, and this is the order a skilled persuader would find."
   },
   {
-    id:"menu-ripple", tag:"menu", name:"Dinner: the ripple",
+    id:"menu-ripple", tag:"7", name:"Dinner: the ripple",
     sub:"meat+red vs pasta+red. They agree about the wine.",
     build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
       P0:["out","in","out","out","in"], Pn:["out","out","in","out","in"], who:["Cleo","Dana"]}),
