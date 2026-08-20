@@ -396,8 +396,8 @@ footer{
     that one thing: your side of the disagreement. That would be a <em>local</em> concession,
     with the price paid right where you disagree.</p>
     <p>But opinions lean on each other. Some things you both <em>agree</em> on are held up only
-    by the thing you are arguing about. Cleo and Dana both reject the fish, each for her own
-    reason: my main course is better. Ask Cleo to reopen her main and her reason goes with it;
+    by the thing you are arguing about. Ada and Ben both reject the fish, each for the same
+    reason: my own main course is better. Ask Ada to reopen her main and her reason goes with it;
     the fish is back on the table, though nobody wanted it there.</p>
     <p>So a concession can cost more than the disagreement, and the extra is paid outside it,
     on things everyone thought were settled. That is why concessions are not local. The two
@@ -556,15 +556,15 @@ const FRAMEWORKS = [
     id:"menu-staging", tag:"6", name:"Dinner: staging pays",
     sub:"fish+white vs meat+red. Settle the wine first.",
     build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
-      P0:["in","out","out","in","out"], Pn:["out","in","out","out","in"], who:["Cleo","Dana"]}),
-    story:"Finally, all of it in a published example, not built by us: the chef's menu of Alfano et al. (KR 2024). Fish, meat and pasta exclude one another; white and red wine exclude one another; and the chef will not pour white with meat or pasta (the pairing rule). Cleo has settled on fish+white, and Dana wants her at meat+red: menus that share nothing, four labels apart. Staging tames the crossing: switch the wine first, while the fish still stands and keeps the pairing rule quiet, then reopen the main under the shelter of a committed red. Never more than three labels move at once. Order matters, and this is the order a skilled persuader would find."
+      P0:["in","out","out","in","out"], Pn:["out","in","out","out","in"], who:["Ada","Ben"]}),
+    story:"Finally, all of it in a published example, not built by us: the chef's menu of Alfano et al. (KR 2024). Fish, meat and pasta exclude one another; white and red wine exclude one another; and the chef will not pour white with meat or pasta (the pairing rule). Ada has settled on fish+white, and Ben wants her at meat+red: menus that share nothing, four labels apart. Staging tames the crossing: switch the wine first, while the fish still stands and keeps the pairing rule quiet, then reopen the main under the shelter of a committed red. Never more than three labels move at once. Order matters, and this is the order a skilled persuader would find."
   },
   {
     id:"menu-ripple", tag:"7", name:"Dinner: the ripple",
     sub:"meat+red vs pasta+red. They agree about the wine.",
     build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
-      P0:["out","in","out","out","in"], Pn:["out","out","in","out","in"], who:["Cleo","Dana"]}),
-    story:"The finale, on the same menu. This time the disagreement is tiny: Cleo wants meat+red, Dana wants pasta+red. They agree on the wine and they agree against the fish. But the three mains exclude one another, so 'reopen just the meat' is not a coherent request: reopening the main course puts the fish back on the table, which both of them had ruled out. Two labels of disagreement, and no route moves fewer than three at once. The ripple was sitting in this published framework all along; its authors were asking which menus are acceptable, not what happens on the way from one to another."
+      P0:["out","in","out","out","in"], Pn:["out","out","in","out","in"], who:["Ada","Ben"]}),
+    story:"The finale, on the same menu. This time the disagreement is tiny: Ada wants meat+red, Ben wants pasta+red. They agree on the wine and they agree against the fish. But the three mains exclude one another, so 'reopen just the meat' is not a coherent request: reopening the main course puts the fish back on the table, which both of them had ruled out. Two labels of disagreement, and no route moves fewer than three at once. The ripple was sitting in this published framework all along; its authors were asking which menus are acceptable, not what happens on the way from one to another."
   }
 ];
 
