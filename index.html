@@ -493,26 +493,26 @@ const FRAMEWORKS = [
     sub:"Ada backs a, Ben backs b, one hire.",
     build:()=>({n:2, edges:[[0,1],[1,0]], names:["a","b"],
       P0:["in","out"], Pn:["out","in"]}),
-    story:"Two candidates, one slot, nothing else at stake. The only way across is to reopen the slot and re-decide it."
-  },
-  {
-    id:"outsider", tag:"F₃", name:"An outside applicant",
-    sub:"Both reject c, for different reasons.",
-    build:()=>ballastAF(1),
-    story:"They agree c is out. She rejects c because a is better; he rejects c because b is. The reason is exactly what is being renegotiated: while the slot is suspended, nothing blocks c, so the agreed rejection comes loose too. The agreement is not in dispute, and it still costs."
-  },
-  {
-    id:"ballast", tag:"F_B", name:"Ballast",
-    sub:"B agreed claims hang on the contested slot.",
-    build:()=>ballastAF(+document.getElementById("B").value),
-    story:"Every one of the B agreed rejections rests on the hire going through. Suspend the hire and they all spring open in the same step."
+    story:"Start here: two candidates, one slot, nothing else at stake. The only way across is to reopen the slot and re-decide it. Every crossing costs two, and nothing ever costs less. This is the floor."
   },
   {
     id:"slots", tag:"F₂×2", name:"Two independent slots",
     sub:"Distance 4, and it still only costs 2.",
     build:()=>({n:4, edges:[[0,1],[1,0],[2,3],[3,2]], names:["a₁","b₁","a₂","b₂"],
       P0:["in","out","in","out"], Pn:["out","in","out","in"]}),
-    story:"Nothing links the two slots, so they can be renegotiated one at a time. The distance grows with the number of slots; the incline does not."
+    story:"Inching works: nothing links the two slots, so they can be renegotiated one at a time. The distance grows with the number of slots; the incline stays at the floor. So far, gentle persuasion looks easy."
+  },
+  {
+    id:"outsider", tag:"F₃", name:"An outside applicant",
+    sub:"Both reject c, for different reasons.",
+    build:()=>ballastAF(1),
+    story:"Now the surprise. They agree c is out; she rejects c because a is better, he because b is. The reason is exactly what is being renegotiated: while the slot is suspended, nothing blocks c, so the agreed rejection comes loose too. The agreement is not in dispute, and it still costs."
+  },
+  {
+    id:"ballast", tag:"F_B", name:"Ballast",
+    sub:"B agreed claims hang on the contested slot.",
+    build:()=>ballastAF(+document.getElementById("B").value),
+    story:"And the surprise has no ceiling. Every one of the B agreed rejections rests on the hire going through; suspend the hire and they all spring open in the same step. Same two-argument disagreement, incline B+2."
   },
   {
     id:"ridge", tag:"E8", name:"The ridge",
@@ -520,21 +520,21 @@ const FRAMEWORKS = [
     build:()=>({n:5, edges:[[0,3],[3,0],[1,2],[2,1],[0,4],[1,4]],
       names:["0","1","2","3","4"],
       P0:["in","out","in","out","out"], Pn:["out","in","out","in","out"]}),
-    story:"Claim 4 on the funds is blocked by 0 and by 1, and by nothing else. Meeting in the middle releases both blockers at once, so the route goes over a ridge instead."
+    story:"Gentleness is a skill. Claim 4 on the funds is blocked by 0 and by 1, and by nothing else; meeting in the middle releases both blockers at once. The gentle route goes over a ridge instead: a cross-party position neither side holds, kept only because it keeps the shared rejection standing."
   },
   {
     id:"menu-staging", tag:"menu", name:"Dinner: staging pays",
     sub:"fish+white vs meat+red. Settle the wine first.",
     build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
       P0:["in","out","out","in","out"], Pn:["out","in","out","out","in"], who:["Cleo","Dana"]}),
-    story:"Same framework, further apart: the two menus share nothing. The route changes the wine first while the fish still stands, then changes the main under the shelter of a committed wine."
+    story:"Finally, all of it in a published example: the chef's menu of Alfano et al. (KR 2024), built for a different question. These menus share nothing, yet staging tames the crossing: change the wine first while the fish still stands, then the main under the shelter of a committed wine. Just what a skilled persuader expects."
   },
   {
     id:"menu-ripple", tag:"menu", name:"Dinner: the ripple",
     sub:"meat+red vs pasta+red. They agree about the wine.",
     build:()=>({n:5, edges:MENU_EDGES, names:MENU_NAMES,
       P0:["out","in","out","out","in"], Pn:["out","out","in","out","in"], who:["Cleo","Dana"]}),
-    story:"The chef offers fish, meat or pasta, with white or red, and will not pair white with meat or pasta. This is Example 1 of Alfano et al. (KR 2024). Cleo wants meat, Dana wants pasta, and both ruled out the fish."
+    story:"The finale, same menu: Cleo wants meat, Dana wants pasta, both ruled out the fish. A two-label disagreement, and yet no route moves fewer than three labels at once, because reopening the main reopens the fish. The ripple was in the published framework all along."
   }
 ];
 
