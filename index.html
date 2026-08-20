@@ -655,13 +655,31 @@ function renderAF(){
     if(mutual && x>y) continue;   // draw a mutual attack once, double-headed
     const dx=q.x-p.x, dy=q.y-p.y, L=Math.hypot(dx,dy)||1;
     const ux=dx/L, uy=dy/L;
-    // one straight line, trimmed to the node edges, as in the paper figures
     const sx=p.x+ux*(R+(mutual?3:0)), sy=p.y+uy*(R+(mutual?3:0));
     const tx=q.x-ux*(R+3), ty=q.y-uy*(R+3);
-    const attrs={x1:sx,y1:sy,x2:tx,y2:ty,
-      stroke:"var(--ink-3)","stroke-width":1.5,"marker-end":"url(#ah)",opacity:.85};
-    if(mutual) attrs["marker-start"]="url(#ah)";
-    gE.appendChild(el("line",attrs));
+    // a straight line, as in the paper figures -- unless a third node sits on
+    // the segment (F--P runs straight through M), in which case bow around it
+    const nx=-uy, ny=ux;             // unit normal
+    let block=0;
+    for(let a=0;a<n;a++){
+      if(a===x||a===y) continue;
+      const b=P[a]; if(!b) continue;
+      const t=((b.x-p.x)*ux+(b.y-p.y)*uy)/L;
+      if(t<=0.05||t>=0.95) continue;
+      const off=(b.x-p.x)*nx+(b.y-p.y)*ny;   // signed distance to the line
+      if(Math.abs(off)<R+6) block = off>=0 ? 1 : -1;
+    }
+    const common={stroke:"var(--ink-3)","stroke-width":1.5,
+      "marker-end":"url(#ah)",opacity:.85};
+    if(mutual) common["marker-start"]="url(#ah)";
+    if(block){
+      const bend=(R+16)*-block;          // bow away from the blocking node
+      const mx=(sx+tx)/2+nx*bend, my=(sy+ty)/2+ny*bend;
+      gE.appendChild(el("path",{d:`M ${sx} ${sy} Q ${mx} ${my} ${tx} ${ty}`,
+        fill:"none",...common}));
+    } else {
+      gE.appendChild(el("line",{x1:sx,y1:sy,x2:tx,y2:ty,...common}));
+    }
   }
 
   const gN=el("g",{}); svg.appendChild(gN);
