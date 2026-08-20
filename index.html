@@ -668,12 +668,18 @@ function render(){
   // are two preferred labelings.
   const W=760,H=400,padTop=96,padBot=46;
 
+  // three bands, as in the paper's Figure 1: grounded at the bottom, the
+  // fully committed positions on top, every other complete labeling on one
+  // middle row (ordered most-committed first, so e.g. C2 sits left of C3).
+  const counts=labs.map(L=>commitCount(n,L));
+  const cmin=Math.min(...counts), cmax=Math.max(...counts);
   const levels=new Map();
   labs.forEach((L,i)=>{
-    const c=commitCount(n,L);
-    if(!levels.has(c)) levels.set(c,[]);
-    levels.get(c).push(i);
+    const band = counts[i]===cmin?0 : counts[i]===cmax?2 : 1;
+    if(!levels.has(band)) levels.set(band,[]);
+    levels.get(band).push(i);
   });
+  levels.forEach(row=>row.sort((a,b)=>counts[b]-counts[a]||a-b));
   const keys=[...levels.keys()].sort((a,b)=>a-b);
   const pos=new Map();
   keys.forEach((k,ki)=>{
