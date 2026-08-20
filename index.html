@@ -500,7 +500,7 @@ const FRAMEWORKS = [
     sub:"Distance 4, and it still only costs 2.",
     build:()=>({n:4, edges:[[0,1],[1,0],[2,3],[3,2]], names:["a₁","b₁","a₂","b₂"],
       P0:["in","out","in","out"], Pn:["out","in","out","in"]}),
-    story:"Inching works: nothing links the two slots, so they can be renegotiated one at a time. The distance grows with the number of slots; the incline stays at the floor. So far, gentle persuasion looks easy."
+    story:"Inching works: nothing links the two slots, so they can be renegotiated one at a time. The distance grows with the number of slots; the incline stays at the floor. The drawn route is one of twelve: every edge here moves exactly two labels, so every simple route is a least-resistance route. Six make it in the minimal four steps, and four of those pass through the fully undecided center, asking both slots to be open at once; two never hold more than one slot open. The incline says which routes are gentle, not which gentle route to take. So far, persuasion looks easy."
   },
   {
     id:"outsider", tag:"F₃", name:"An outside applicant",
