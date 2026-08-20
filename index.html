@@ -874,8 +874,12 @@ function quickNums(f){
   return {d:weight(spec.n,labs[sIdx],labs[tIdx]), i:r.tau};
 }
 const numsSpan = f => {
+  /* the relation d vs inc IS the story: > staging wins, < someone pays
+     outside the disagreement, = the floor. Ballast stays symbolic. */
+  if(f.id==="ballast") return `(<span class="nd">2</span> &lt; <span class="ni">B+2</span>)`;
   const q=quickNums(f);
-  return `(d=<span class="nd">${q.d}</span>, inc=<span class="ni">${q.i}</span>)`;
+  const rel = q.d<q.i ? "&lt;" : q.d>q.i ? "&gt;" : "=";
+  return `(<span class="nd">${q.d}</span> ${rel} <span class="ni">${q.i}</span>)`;
 };
 const choices=document.getElementById("choices");
 FRAMEWORKS.forEach(f=>{
@@ -900,12 +904,7 @@ function bnote(){
     B===0 ? "No ballast: the bare contested slot."
           : `${B} agreed rejection${B>1?"s":""} resting on the contested slot. Incline should read ${B+2}.`;
 }
-Bin.addEventListener("input",()=>{
-  bnote();
-  const bn=document.querySelector('.nums[data-for="ballast"]');
-  if(bn) bn.innerHTML=numsSpan(FRAMEWORKS.find(f=>f.id==="ballast"));
-  if(cur.id==="ballast") build();
-});
+Bin.addEventListener("input",()=>{ bnote(); if(cur.id==="ballast") build(); });
 bnote();
 document.getElementById("ballastRow").classList.add("disabled");
 
