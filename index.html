@@ -231,6 +231,8 @@ table.labs th,table.labs td{
 table.labs th{color:var(--ink-3);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
 table.labs td.rowname{text-align:left;color:var(--ink-2);white-space:nowrap}
 table.labs tr.cur{background:var(--surface-2)}
+table.labs tbody tr:not(:first-child){cursor:pointer}
+table.labs tbody tr:not(:first-child):hover td.rowname{color:var(--gentle);font-weight:600}
 table.labs td.v-in{background:var(--in-fill);color:#1c2733;font-weight:600}
 table.labs td.v-out{background:var(--out-fill);color:#1c2733;font-weight:600}
 table.labs td.v-undec{background:var(--undec-fill);color:#1c2733;font-weight:600}
@@ -337,8 +339,8 @@ footer{
       <div class="ctrls" role="group" aria-label="Walk the route">
         <button class="act" id="btnStart" title="Back to the starting position">&#9198;&nbsp; Start</button>
         <button class="act" id="btnEnd" title="Jump to the target position">End &nbsp;&#9197;</button>
-        <button class="act primary" id="btnFwd" title="Next step">Forward &nbsp;&#9654;</button>
         <button class="act" id="btnBack" title="Previous step">&#9664;&nbsp; Backward</button>
+        <button class="act primary" id="btnFwd" title="Next step">Forward &nbsp;&#9654;</button>
         <span class="stepcount" id="stepcount"></span>
       </div>
       <p class="narration" id="narration"></p>
@@ -410,8 +412,9 @@ footer{
 
 <footer>
   Companion to <em>Persuasion by Inches: Why Concessions Are Not Local</em>
-  · B. Ludäscher and S. Bowers · every labeling, edge weight and
-  incline on this page is computed in the browser from the framework, not hard-coded.
+  · B. Ludäscher and S. Bowers · the figures — every labeling, edge weight and
+  incline — are computed in the browser from the framework, not hard-coded;
+  the route counts quoted in the stories were machine-verified separately.
 </footer>
 </div>
 
@@ -861,6 +864,12 @@ function render(){
       }).join("")+"</tr>";
   });
   tbl.innerHTML=html;
+  // rows are the route: click one to jump to that step (Ada = start, Ben = end)
+  [...tbl.rows].forEach((r,k)=>{
+    if(k===0) return;
+    r.title = k-1===step ? "Current step" : "Jump here";
+    r.addEventListener("click",()=>goto(k-1));
+  });
 
   /* --- narration --- */
   const nar=document.getElementById("narration");
